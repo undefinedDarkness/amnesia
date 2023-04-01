@@ -1,0 +1,2036 @@
+	.file	"dither_bench.cpp"
+# GNU C++14 (Debian 10.2.1-6) version 10.2.1 20210110 (x86_64-linux-gnu)
+#	compiled by GNU C version 10.2.1 20210110, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.0, isl version isl-0.23-GMP
+
+# GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+# options passed:  -imultiarch x86_64-linux-gnu -D_GNU_SOURCE
+# dither_bench.cpp -march=sandybridge -mmmx -mno-3dnow -msse -msse2 -msse3
+# -mssse3 -mno-sse4a -mcx16 -msahf -mno-movbe -maes -mno-sha -mpclmul
+# -mpopcnt -mno-abm -mno-lwp -mno-fma -mno-fma4 -mno-xop -mno-bmi -mno-sgx
+# -mno-bmi2 -mno-pconfig -mno-wbnoinvd -mno-tbm -mno-avx2 -msse4.2 -msse4.1
+# -mno-lzcnt -mno-rtm -mno-hle -mno-rdrnd -mno-f16c -mno-fsgsbase
+# -mno-rdseed -mno-prfchw -mno-adx -mfxsr -mxsave -mxsaveopt -mno-avx512f
+# -mno-avx512er -mno-avx512cd -mno-avx512pf -mno-prefetchwt1
+# -mno-clflushopt -mno-xsavec -mno-xsaves -mno-avx512dq -mno-avx512bw
+# -mno-avx512vl -mno-avx512ifma -mno-avx512vbmi -mno-avx5124fmaps
+# -mno-avx5124vnniw -mno-clwb -mno-mwaitx -mno-clzero -mno-pku -mno-rdpid
+# -mno-gfni -mno-shstk -mno-avx512vbmi2 -mno-avx512vnni -mno-vaes
+# -mno-vpclmulqdq -mno-avx512bitalg -mno-avx512vpopcntdq -mno-movdiri
+# -mno-movdir64b -mno-waitpkg -mno-cldemote -mno-ptwrite -mno-avx512bf16
+# -mno-enqcmd -mno-avx512vp2intersect --param=l1-cache-size=32
+# --param=l1-cache-line-size=64 --param=l2-cache-size=3072
+# -mtune=sandybridge -mavx -auxbase-strip dt -Ofast -fverbose-asm
+# -fuse-ld=bfd -flax-vector-conversions -fasynchronous-unwind-tables
+# options enabled:  -fPIC -fPIE -faggressive-loop-optimizations
+# -falign-functions -falign-jumps -falign-labels -falign-loops
+# -fallocation-dce -fallow-store-data-races -fassociative-math
+# -fasynchronous-unwind-tables -fauto-inc-dec -fbranch-count-reg
+# -fcaller-saves -fcode-hoisting -fcombine-stack-adjustments -fcompare-elim
+# -fcprop-registers -fcrossjumping -fcse-follow-jumps -fcx-limited-range
+# -fdefer-pop -fdelete-null-pointer-checks -fdevirtualize
+# -fdevirtualize-speculatively -fdwarf2-cfi-asm -fearly-inlining
+# -feliminate-unused-debug-symbols -feliminate-unused-debug-types
+# -fexceptions -fexpensive-optimizations -ffinite-loops -ffinite-math-only
+# -fforward-propagate -ffp-int-builtin-inexact -ffunction-cse -fgcse
+# -fgcse-after-reload -fgcse-lm -fgnu-unique -fguess-branch-probability
+# -fhoist-adjacent-loads -fident -fif-conversion -fif-conversion2
+# -findirect-inlining -finline -finline-atomics -finline-functions
+# -finline-functions-called-once -finline-small-functions -fipa-bit-cp
+# -fipa-cp -fipa-cp-clone -fipa-icf -fipa-icf-functions -fipa-icf-variables
+# -fipa-profile -fipa-pure-const -fipa-ra -fipa-reference
+# -fipa-reference-addressable -fipa-sra -fipa-stack-alignment -fipa-vrp
+# -fira-hoist-pressure -fira-share-save-slots -fira-share-spill-slots
+# -fisolate-erroneous-paths-dereference -fivopts -fkeep-static-consts
+# -fleading-underscore -flifetime-dse -floop-interchange
+# -floop-unroll-and-jam -flra-remat -fmerge-constants -fmerge-debug-strings
+# -fmove-loop-invariants -fomit-frame-pointer -foptimize-sibling-calls
+# -foptimize-strlen -fpartial-inlining -fpeel-loops -fpeephole -fpeephole2
+# -fplt -fpredictive-commoning -fprefetch-loop-arrays -freciprocal-math
+# -free -freg-struct-return -freorder-blocks -freorder-blocks-and-partition
+# -freorder-functions -frerun-cse-after-loop
+# -fsched-critical-path-heuristic -fsched-dep-count-heuristic
+# -fsched-group-heuristic -fsched-interblock -fsched-last-insn-heuristic
+# -fsched-rank-heuristic -fsched-spec -fsched-spec-insn-heuristic
+# -fsched-stalled-insns-dep -fschedule-fusion -fschedule-insns2
+# -fsemantic-interposition -fshow-column -fshrink-wrap
+# -fshrink-wrap-separate -fsplit-ivs-in-unroller -fsplit-loops
+# -fsplit-paths -fsplit-wide-types -fssa-backprop -fssa-phiopt -fstdarg-opt
+# -fstore-merging -fstrict-aliasing -fstrict-volatile-bitfields
+# -fsync-libcalls -fthread-jumps -ftoplevel-reorder -ftree-bit-ccp
+# -ftree-builtin-call-dce -ftree-ccp -ftree-ch -ftree-coalesce-vars
+# -ftree-copy-prop -ftree-cselim -ftree-dce -ftree-dominator-opts
+# -ftree-dse -ftree-forwprop -ftree-fre -ftree-loop-distribute-patterns
+# -ftree-loop-distribution -ftree-loop-if-convert -ftree-loop-im
+# -ftree-loop-ivcanon -ftree-loop-optimize -ftree-loop-vectorize
+# -ftree-parallelize-loops= -ftree-partial-pre -ftree-phiprop -ftree-pre
+# -ftree-pta -ftree-reassoc -ftree-scev-cprop -ftree-sink
+# -ftree-slp-vectorize -ftree-slsr -ftree-sra -ftree-switch-conversion
+# -ftree-tail-merge -ftree-ter -ftree-vrp -funit-at-a-time
+# -funsafe-math-optimizations -funswitch-loops -funwind-tables
+# -fverbose-asm -fversion-loops-for-strides -fzero-initialized-in-bss
+# -m128bit-long-double -m64 -m80387 -maes -malign-stringops -mavx
+# -mavx256-split-unaligned-load -mavx256-split-unaligned-store -mcx16
+# -mfancy-math-387 -mfp-ret-in-387 -mfxsr -mglibc -mlong-double-80 -mmmx
+# -mpclmul -mpopcnt -mpush-args -mred-zone -msahf -msse -msse2 -msse3
+# -msse4 -msse4.1 -msse4.2 -mssse3 -mstv -mtls-direct-seg-refs -mvzeroupper
+# -mxsave -mxsaveopt
+
+	.text
+	.section	.text._ZNKSt5ctypeIcE8do_widenEc,"axG",@progbits,_ZNKSt5ctypeIcE8do_widenEc,comdat
+	.align 2
+	.p2align 4
+	.weak	_ZNKSt5ctypeIcE8do_widenEc
+	.type	_ZNKSt5ctypeIcE8do_widenEc, @function
+_ZNKSt5ctypeIcE8do_widenEc:
+.LFB1635:
+	.cfi_startproc
+# /usr/include/c++/10/bits/locale_facets.h:1084:       do_widen(char __c) const
+	movl	%esi, %eax	# tmp87, __c
+# /usr/include/c++/10/bits/locale_facets.h:1085:       { return __c; }
+	ret	
+	.cfi_endproc
+.LFE1635:
+	.size	_ZNKSt5ctypeIcE8do_widenEc, .-_ZNKSt5ctypeIcE8do_widenEc
+	.text
+	.align 2
+	.p2align 4
+	.type	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEED2Ev, @function
+_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEED2Ev:
+.LFB9423:
+	.cfi_startproc
+# /usr/include/c++/10/thread:205:       struct _State_impl : public _State
+	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE(%rip), %rax	#, tmp86
+	movq	%rax, (%rdi)	# tmp86, this_3(D)->D.99623._vptr._State
+	jmp	_ZNSt6thread6_StateD2Ev@PLT	#
+	.cfi_endproc
+.LFE9423:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEED2Ev, .-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEED2Ev
+	.set	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEED1Ev,_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEED2Ev
+	.align 2
+	.p2align 4
+	.type	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEED0Ev, @function
+_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEED0Ev:
+.LFB9425:
+	.cfi_startproc
+	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE(%rip), %rax	#, tmp86
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+# /usr/include/c++/10/thread:205:       struct _State_impl : public _State
+	movq	%rdi, %rbp	# tmp85, this
+	movq	%rax, (%rdi)	# tmp86, this_2(D)->D.99623._vptr._State
+	call	_ZNSt6thread6_StateD2Ev@PLT	#
+	movq	%rbp, %rdi	# this,
+	popq	%rbp	#
+	.cfi_def_cfa_offset 8
+	movl	$16, %esi	#,
+	jmp	_ZdlPvm@PLT	#
+	.cfi_endproc
+.LFE9425:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEED0Ev, .-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEED0Ev
+	.align 2
+	.p2align 4
+	.type	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEED2Ev, @function
+_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEED2Ev:
+.LFB9419:
+	.cfi_startproc
+# /usr/include/c++/10/thread:205:       struct _State_impl : public _State
+	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE(%rip), %rax	#, tmp86
+	movq	%rax, (%rdi)	# tmp86, this_3(D)->D.101824._vptr._State
+	jmp	_ZNSt6thread6_StateD2Ev@PLT	#
+	.cfi_endproc
+.LFE9419:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEED2Ev, .-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEED2Ev
+	.set	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEED1Ev,_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEED2Ev
+	.align 2
+	.p2align 4
+	.type	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEED0Ev, @function
+_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEED0Ev:
+.LFB9421:
+	.cfi_startproc
+	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE(%rip), %rax	#, tmp86
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+# /usr/include/c++/10/thread:205:       struct _State_impl : public _State
+	movq	%rdi, %rbp	# tmp85, this
+	movq	%rax, (%rdi)	# tmp86, this_2(D)->D.101824._vptr._State
+	call	_ZNSt6thread6_StateD2Ev@PLT	#
+	movq	%rbp, %rdi	# this,
+	popq	%rbp	#
+	.cfi_def_cfa_offset 8
+	movl	$24, %esi	#,
+	jmp	_ZdlPvm@PLT	#
+	.cfi_endproc
+.LFE9421:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEED0Ev, .-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEED0Ev
+	.align 2
+	.p2align 4
+	.type	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEED2Ev, @function
+_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEED2Ev:
+.LFB9415:
+	.cfi_startproc
+# /usr/include/c++/10/thread:205:       struct _State_impl : public _State
+	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE(%rip), %rax	#, tmp86
+	movq	%rax, (%rdi)	# tmp86, this_3(D)->D.103580._vptr._State
+	jmp	_ZNSt6thread6_StateD2Ev@PLT	#
+	.cfi_endproc
+.LFE9415:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEED2Ev, .-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEED2Ev
+	.set	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEED1Ev,_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEED2Ev
+	.align 2
+	.p2align 4
+	.type	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEED0Ev, @function
+_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEED0Ev:
+.LFB9417:
+	.cfi_startproc
+	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE(%rip), %rax	#, tmp86
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+# /usr/include/c++/10/thread:205:       struct _State_impl : public _State
+	movq	%rdi, %rbp	# tmp85, this
+	movq	%rax, (%rdi)	# tmp86, this_2(D)->D.103580._vptr._State
+	call	_ZNSt6thread6_StateD2Ev@PLT	#
+	movq	%rbp, %rdi	# this,
+	popq	%rbp	#
+	.cfi_def_cfa_offset 8
+	movl	$32, %esi	#,
+	jmp	_ZdlPvm@PLT	#
+	.cfi_endproc
+.LFE9417:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEED0Ev, .-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEED0Ev
+	.align 2
+	.p2align 4
+	.type	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEED2Ev, @function
+_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEED2Ev:
+.LFB9411:
+	.cfi_startproc
+# /usr/include/c++/10/thread:205:       struct _State_impl : public _State
+	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE(%rip), %rax	#, tmp86
+	movq	%rax, (%rdi)	# tmp86, this_3(D)->D.105336._vptr._State
+	jmp	_ZNSt6thread6_StateD2Ev@PLT	#
+	.cfi_endproc
+.LFE9411:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEED2Ev, .-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEED2Ev
+	.set	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEED1Ev,_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEED2Ev
+	.align 2
+	.p2align 4
+	.type	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEED0Ev, @function
+_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEED0Ev:
+.LFB9413:
+	.cfi_startproc
+	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE(%rip), %rax	#, tmp86
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+# /usr/include/c++/10/thread:205:       struct _State_impl : public _State
+	movq	%rdi, %rbp	# tmp85, this
+	movq	%rax, (%rdi)	# tmp86, this_2(D)->D.105336._vptr._State
+	call	_ZNSt6thread6_StateD2Ev@PLT	#
+	movq	%rbp, %rdi	# this,
+	popq	%rbp	#
+	.cfi_def_cfa_offset 8
+	movl	$32, %esi	#,
+	jmp	_ZdlPvm@PLT	#
+	.cfi_endproc
+.LFE9413:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEED0Ev, .-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEED0Ev
+	.section	.rodata.str1.1,"aMS",@progbits,1
+.LC0:
+	.string	"Starting at "
+.LC1:
+	.string	" for "
+.LC2:
+	.string	" pixels"
+	.text
+	.p2align 4
+	.globl	_Z6dithermm
+	.type	_Z6dithermm, @function
+_Z6dithermm:
+.LFB8518:
+	.cfi_startproc
+	pushq	%r15	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 15, -16
+	pushq	%r14	#
+	.cfi_def_cfa_offset 24
+	.cfi_offset 14, -24
+	pushq	%r13	#
+	.cfi_def_cfa_offset 32
+	.cfi_offset 13, -32
+	movq	%rdi, %r13	# tmp598, start_h
+	pushq	%r12	#
+	.cfi_def_cfa_offset 40
+	.cfi_offset 12, -40
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 48
+	.cfi_offset 6, -48
+	pushq	%rbx	#
+	.cfi_def_cfa_offset 56
+	.cfi_offset 3, -56
+	movq	%rsi, %rbx	# tmp599, height
+	subq	$40, %rsp	#,
+	.cfi_def_cfa_offset 96
+# /usr/include/x86_64-linux-gnu/c++/10/bits/gthr-default.h:748:   if (__gthread_active_p ())
+	movq	_ZL28__gthrw___pthread_key_createPjPFvPvE@GOTPCREL(%rip), %r12	#, tmp594
+	testq	%r12, %r12	# tmp594
+	je	.L16	#,
+# /usr/include/x86_64-linux-gnu/c++/10/bits/gthr-default.h:749:     return __gthrw_(pthread_mutex_lock) (__mutex);
+	leaq	outLk(%rip), %rdi	#,
+	call	_ZL26__gthrw_pthread_mutex_lockP15pthread_mutex_t@PLT	#
+# /usr/include/c++/10/bits/std_mutex.h:103:       if (__e)
+	testl	%eax, %eax	# _165
+	jne	.L40	#,
+.L16:
+# /usr/include/c++/10/ostream:611: 	__ostream_insert(__out, __s,
+	leaq	.LC0(%rip), %rsi	#,
+	movl	$12, %edx	#,
+	leaq	_ZSt4cout(%rip), %rdi	#,
+	call	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@PLT	#
+# /usr/include/c++/10/ostream:171:       { return _M_insert(__n); }
+	leaq	_ZSt4cout(%rip), %rdi	#,
+	movq	%r13, %rsi	# start_h,
+	call	_ZNSo9_M_insertImEERSoT_@PLT	#
+# /usr/include/c++/10/ostream:611: 	__ostream_insert(__out, __s,
+	movl	$5, %edx	#,
+	leaq	.LC1(%rip), %rsi	#,
+# /usr/include/c++/10/ostream:171:       { return _M_insert(__n); }
+	movq	%rax, %rbp	# tmp601, _146
+# /usr/include/c++/10/ostream:611: 	__ostream_insert(__out, __s,
+	movq	%rax, %rdi	# _146,
+	call	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@PLT	#
+# /usr/include/c++/10/ostream:171:       { return _M_insert(__n); }
+	movq	%rbp, %rdi	# _146,
+	movq	%rbx, %rsi	# height,
+	call	_ZNSo9_M_insertImEERSoT_@PLT	#
+# /usr/include/c++/10/ostream:611: 	__ostream_insert(__out, __s,
+	movl	$7, %edx	#,
+	leaq	.LC2(%rip), %rsi	#,
+# /usr/include/c++/10/ostream:171:       { return _M_insert(__n); }
+	movq	%rax, %rbp	# tmp602, _145
+# /usr/include/c++/10/ostream:611: 	__ostream_insert(__out, __s,
+	movq	%rax, %rdi	# _145,
+	call	_ZSt16__ostream_insertIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_PKS3_l@PLT	#
+# /usr/include/c++/10/ostream:682:     { return flush(__os.put(__os.widen('\n'))); }
+	movq	0(%rbp), %rax	# MEM[(struct basic_ostream *)_145]._vptr.basic_ostream, MEM[(struct basic_ostream *)_145]._vptr.basic_ostream
+	movq	-24(%rax), %rax	# MEM[(long int *)_155 + -24B], MEM[(long int *)_155 + -24B]
+	movq	240(%rbp,%rax), %r14	# MEM[(const struct __ctype_type * *)_158 + 240B], _163
+# /usr/include/c++/10/bits/basic_ios.h:49:       if (!__f)
+	testq	%r14, %r14	# _163
+	je	.L41	#,
+# /usr/include/c++/10/bits/locale_facets.h:874: 	if (_M_widen_ok)
+	cmpb	$0, 56(%r14)	#, MEM[(const struct ctype *)_163]._M_widen_ok
+	je	.L18	#,
+# /usr/include/c++/10/ostream:682:     { return flush(__os.put(__os.widen('\n'))); }
+	movsbl	67(%r14), %esi	# MEM[(const struct ctype *)_163]._M_widen[10], _260
+.L19:
+	movq	%rbp, %rdi	# _145,
+	call	_ZNSo3putEc@PLT	#
+	movq	%rax, %rdi	# tmp604, _161
+# /usr/include/c++/10/ostream:704:     { return __os.flush(); }
+	call	_ZNSo5flushEv@PLT	#
+# /usr/include/x86_64-linux-gnu/c++/10/bits/gthr-default.h:778:   if (__gthread_active_p ())
+	testq	%r12, %r12	# tmp594
+	je	.L20	#,
+# /usr/include/x86_64-linux-gnu/c++/10/bits/gthr-default.h:779:     return __gthrw_(pthread_mutex_unlock) (__mutex);
+	leaq	outLk(%rip), %rdi	#,
+	call	_ZL28__gthrw_pthread_mutex_unlockP15pthread_mutex_t@PLT	#
+.L20:
+# dither_bench.cpp:30:   for (i = start_h; i < start_h+height - 1; i++) {
+	leaq	-1(%r13,%rbx), %rax	#, _194
+# dither_bench.cpp:28:   const size_t nPixels = width * height;
+	movq	_ZL5width(%rip), %r14	# width, width.0_1
+# dither_bench.cpp:30:   for (i = start_h; i < start_h+height - 1; i++) {
+	movq	%rax, 8(%rsp)	# _194, %sfp
+# dither_bench.cpp:30:   for (i = start_h; i < start_h+height - 1; i++) {
+	cmpq	%rax, %r13	# _194, start_h
+	jnb	.L38	#,
+# dither_bench.cpp:49:     for (j = 1; j < width - 1; j++) {
+	leaq	-1(%r14), %rax	#, _153
+# dither_bench.cpp:33:     pixelv v = pixels[i * width + 0];
+	movq	_ZL6pixels(%rip), %r12	# pixels, pixels.1_4
+# dither_bench.cpp:49:     for (j = 1; j < width - 1; j++) {
+	movq	%rax, 16(%rsp)	# _153, %sfp
+	leaq	0(,%r14,4), %rbx	#, _271
+	movq	%r14, %rax	# width.0_1, _269
+	imulq	%r13, %rax	# start_h, _269
+	addq	$1, %r13	#, start_h
+	movq	%rbx, 24(%rsp)	# _271, %sfp
+	leaq	(%r14,%r14), %r8	#, _287
+	leaq	8(%r12,%rax,4), %r11	#, ivtmp.404
+	leaq	(%rax,%r14,2), %rbp	#, ivtmp.406
+	movq	%rbx, %rax	# _271, tmp361
+	imulq	%r13, %rax	# start_h, tmp361
+	leaq	-4(%r12,%rax), %r9	#, ivtmp.409
+	.p2align 4,,10
+	.p2align 3
+.L25:
+# dither_bench.cpp:33:     pixelv v = pixels[i * width + 0];
+	movl	-8(%r11), %eax	# MEM[base: _249, offset: -8B], _9
+# dither_bench.cpp:34:     pixelv o = v > 127;
+	xorl	%edx, %edx	# tmp366
+# dither_bench.cpp:43:     pixels[(i + 1) * width + 0 + 1] += 1 * err;
+	movq	%rbp, %r10	# ivtmp.406, _27
+	movq	%r11, %rbx	# ivtmp.404, _238
+# dither_bench.cpp:34:     pixelv o = v > 127;
+	movl	%eax, %ecx	# _9, tmp367
+# dither_bench.cpp:35:     o[3] = v[3];
+	movl	%eax, %edi	# _9, tmp389
+# dither_bench.cpp:34:     pixelv o = v > 127;
+	sarb	$7, %cl	#, tmp367
+# dither_bench.cpp:35:     o[3] = v[3];
+	andl	$-16777216, %edi	#, tmp389
+# dither_bench.cpp:34:     pixelv o = v > 127;
+	movb	%cl, %dl	# tmp367, tmp366
+	movsbl	%ah, %ecx	# _9, tmp369
+	sarb	$7, %cl	#, tmp368
+	movb	%cl, %dh	# tmp368, tmp366
+	movl	%eax, %ecx	# _9, tmp373
+	sall	$8, %ecx	#, tmp373
+	sarl	$15, %ecx	#, tmp374
+	movl	%ecx, %esi	# tmp374, tmp374
+	movzwl	%dx, %ecx	# tmp366, tmp377
+# dither_bench.cpp:37:     err -= o;
+	movl	%eax, %edx	# _9, tmp392
+# dither_bench.cpp:34:     pixelv o = v > 127;
+	andl	$16711680, %esi	#, tmp374
+# dither_bench.cpp:37:     err -= o;
+	orl	$-2139062144, %eax	#, _9
+# dither_bench.cpp:35:     o[3] = v[3];
+	orl	%esi, %ecx	# tmp375, tmp390
+	orl	%edi, %ecx	# tmp389, tmp391
+# dither_bench.cpp:37:     err -= o;
+	xorl	%ecx, %edx	# tmp391, tmp392
+	movl	%ecx, %edi	# tmp391, tmp396
+# dither_bench.cpp:40:     pixels[i * width + 0 + 0] = o;
+	movl	%ecx, -8(%r11)	# tmp391, MEM[base: _249, offset: -8B]
+# dither_bench.cpp:38:     err >>= 3;
+	xorl	%ecx, %ecx	# err
+# dither_bench.cpp:37:     err -= o;
+	notl	%edx	# tmp393
+	andl	$2139062143, %edi	#, tmp396
+	movl	%edx, %esi	# tmp393, tmp393
+	movl	%eax, %edx	# _9, tmp395
+	andl	$-2139062144, %esi	#, tmp393
+	subl	%edi, %edx	# tmp396, tmp397
+	xorl	%esi, %edx	# tmp394, _37
+# dither_bench.cpp:41:     pixels[i * width + 0 + 1] += 1 * err;
+	movl	-4(%r11), %esi	# MEM[base: _249, offset: -4B], _60
+# dither_bench.cpp:38:     err >>= 3;
+	movl	%edx, %eax	# _37, tmp399
+	movl	%edx, %edi	# _37, tmp403
+	sarb	$3, %al	#, tmp399
+	sall	$8, %edi	#, tmp403
+	movb	%al, %cl	# tmp399, err
+	movsbl	%dh, %eax	# _37, tmp400
+	sarl	$11, %edi	#, tmp406
+	sarb	$3, %al	#, tmp401
+	andl	$16711680, %edi	#, tmp407
+	sarl	$27, %edx	#, tmp412
+	movb	%al, %ch	# tmp401, err
+	sall	$24, %edx	#, tmp414
+	movzwl	%cx, %ecx	# err, tmp409
+	movl	%ecx, %eax	# tmp409, tmp409
+	orl	%edi, %eax	# tmp407, tmp409
+	orl	%edx, %eax	# tmp414, tmp416
+# dither_bench.cpp:41:     pixels[i * width + 0 + 1] += 1 * err;
+	movl	%esi, %edx	# _60, tmp417
+	andl	$2139062143, %esi	#, tmp419
+	movl	%eax, %ecx	# tmp416, _65
+	xorl	%eax, %edx	# tmp416, tmp417
+	andl	$2139062143, %ecx	#, _65
+	andl	$-2139062144, %edx	#, tmp418
+	addl	%ecx, %esi	# _65, tmp420
+	xorl	%edx, %esi	# tmp418, tmp421
+# dither_bench.cpp:42:     pixels[i * width + 0 + 2] += 1 * err;
+	movl	(%r11), %edx	# MEM[base: _249, offset: 0B], _78
+# dither_bench.cpp:41:     pixels[i * width + 0 + 1] += 1 * err;
+	movl	%esi, -4(%r11)	# tmp421, MEM[base: _249, offset: -4B]
+# dither_bench.cpp:42:     pixels[i * width + 0 + 2] += 1 * err;
+	movl	%eax, %esi	# tmp416, tmp422
+	xorl	%edx, %esi	# _78, tmp422
+	andl	$-2139062144, %esi	#, tmp423
+	andl	$2139062143, %edx	#, tmp424
+# dither_bench.cpp:43:     pixels[(i + 1) * width + 0 + 1] += 1 * err;
+	subq	%r14, %r10	# width.0_1, _27
+# dither_bench.cpp:42:     pixels[i * width + 0 + 2] += 1 * err;
+	addl	%ecx, %edx	# _65, tmp425
+	xorl	%esi, %edx	# tmp423, tmp426
+	movl	%edx, (%r11)	# tmp426, MEM[base: _249, offset: 0B]
+# dither_bench.cpp:43:     pixels[(i + 1) * width + 0 + 1] += 1 * err;
+	movl	8(%r9), %edx	# MEM[base: _241, offset: 8B], _314
+	movl	%edx, %esi	# _314, tmp427
+	xorl	%eax, %edx	# tmp416, tmp429
+	andl	$2139062143, %esi	#, tmp427
+	andl	$-2139062144, %edx	#, tmp430
+	addl	%ecx, %esi	# _65, tmp428
+	xorl	%esi, %edx	# tmp428, tmp431
+	movl	%edx, 8(%r9)	# tmp431, MEM[base: _241, offset: 8B]
+# dither_bench.cpp:44:     pixels[(i + 1) * width + 0 + 0] += 1 * err;
+	movl	4(%r9), %edx	# MEM[base: _241, offset: 4B], _227
+	movl	%edx, %esi	# _227, tmp432
+	xorl	%eax, %edx	# tmp416, tmp434
+	andl	$2139062143, %esi	#, tmp432
+	andl	$-2139062144, %edx	#, tmp435
+	addl	%ecx, %esi	# _65, tmp433
+	xorl	%esi, %edx	# tmp433, tmp436
+	movl	%edx, 4(%r9)	# tmp436, MEM[base: _241, offset: 4B]
+# dither_bench.cpp:45:     pixels[(i + 2) * width + 0 + 0] += 1 * err;
+	movl	(%r12,%rbp,4), %esi	# MEM[base: pixels.1_4, index: ivtmp.406_265, step: 4, offset: 0B], _218
+	movl	%esi, %edx	# _218, tmp437
+	xorl	%esi, %eax	# _218, tmp439
+	andl	$2139062143, %edx	#, tmp437
+	andl	$-2139062144, %eax	#, tmp440
+	addl	%ecx, %edx	# _65, tmp438
+	xorl	%eax, %edx	# tmp440, tmp441
+# dither_bench.cpp:49:     for (j = 1; j < width - 1; j++) {
+	cmpq	$1, 16(%rsp)	#, %sfp
+# dither_bench.cpp:45:     pixels[(i + 2) * width + 0 + 0] += 1 * err;
+	movl	%edx, (%r12,%rbp,4)	# tmp441, MEM[base: pixels.1_4, index: ivtmp.406_265, step: 4, offset: 0B]
+# dither_bench.cpp:49:     for (j = 1; j < width - 1; j++) {
+	jbe	.L27	#,
+	leaq	4(%r9), %rbx	#, _235
+	leaq	-4(%r11), %rsi	#, ivtmp.389
+	movq	%rbx, %rdi	# _235, ivtmp.392
+	.p2align 4,,10
+	.p2align 3
+.L23:
+# dither_bench.cpp:50:       pixelv v = pixels[i * width + j];
+	movl	(%rsi), %eax	# MEM[base: _319, offset: 0B], _47
+# dither_bench.cpp:51:       pixelv o = v > 127;
+	xorl	%ecx, %ecx	# tmp442
+	movl	%eax, %edx	# _47, tmp443
+	sarb	$7, %dl	#, tmp443
+	movb	%dl, %cl	# tmp443, tmp442
+	movsbl	%ah, %edx	# _47, tmp445
+	sarb	$7, %dl	#, tmp444
+	movb	%dl, %ch	# tmp444, tmp442
+	movl	%eax, %edx	# _47, tmp449
+	sall	$8, %edx	#, tmp449
+	sarl	$15, %edx	#, tmp450
+	andl	$16711680, %edx	#, tmp450
+	movl	%edx, %r15d	# tmp450, tmp451
+	movzwl	%cx, %edx	# tmp442, tmp453
+# dither_bench.cpp:52:       o[3] = v[3];
+	movl	%eax, %ecx	# _47, tmp465
+	andl	$-16777216, %ecx	#, tmp465
+	orl	%r15d, %edx	# tmp451, tmp466
+	orl	%ecx, %edx	# tmp465, tmp467
+# dither_bench.cpp:54:       err -= o;
+	movl	%eax, %ecx	# _47, tmp468
+	movl	%edx, %r15d	# tmp467, tmp469
+	xorl	%edx, %eax	# tmp467, tmp471
+	orl	$-2139062144, %ecx	#, tmp468
+# dither_bench.cpp:57:       pixels[i * width + j + 0] = o;
+	movl	%edx, (%rsi)	# tmp467, MEM[base: _319, offset: 0B]
+# dither_bench.cpp:54:       err -= o;
+	andl	$2139062143, %r15d	#, tmp469
+	notl	%eax	# tmp472
+# dither_bench.cpp:55:       err >>= 3;
+	xorl	%edx, %edx	# err
+# dither_bench.cpp:54:       err -= o;
+	subl	%r15d, %ecx	# tmp469, tmp470
+	andl	$-2139062144, %eax	#, tmp473
+# dither_bench.cpp:58:       pixels[i * width + j + 1] += 1 * err;
+	movl	4(%rsi), %r15d	# MEM[base: _319, offset: 4B], _109
+# dither_bench.cpp:54:       err -= o;
+	xorl	%eax, %ecx	# tmp473, _174
+# dither_bench.cpp:55:       err >>= 3;
+	movl	%ecx, %eax	# _174, tmp475
+	sarb	$3, %al	#, tmp475
+	movb	%al, %dl	# tmp475, err
+	movsbl	%ch, %eax	# _174, tmp476
+	sarb	$3, %al	#, tmp477
+	movb	%al, %dh	# tmp477, err
+	movl	%ecx, %eax	# _174, tmp479
+	sarl	$27, %ecx	#, tmp488
+	sall	$8, %eax	#, tmp479
+	movzwl	%dx, %edx	# err, tmp485
+	sall	$24, %ecx	#, tmp490
+	sarl	$11, %eax	#, tmp482
+	andl	$16711680, %eax	#, tmp483
+	orl	%edx, %eax	# tmp485, tmp491
+	orl	%ecx, %eax	# tmp490, tmp492
+# dither_bench.cpp:58:       pixels[i * width + j + 1] += 1 * err;
+	movl	%eax, %ecx	# tmp492, _5
+	movl	%eax, %edx	# tmp492, tmp493
+	andl	$2139062143, %ecx	#, _5
+	xorl	%r15d, %edx	# _109, tmp493
+	andl	$2139062143, %r15d	#, tmp495
+	andl	$-2139062144, %edx	#, tmp494
+	addl	%ecx, %r15d	# _5, tmp496
+	xorl	%edx, %r15d	# tmp494, tmp497
+# dither_bench.cpp:59:       pixels[i * width + j + 2] += 1 * err;
+	movl	8(%rsi), %edx	# MEM[base: _319, offset: 8B], _310
+# dither_bench.cpp:58:       pixels[i * width + j + 1] += 1 * err;
+	movl	%r15d, 4(%rsi)	# tmp497, MEM[base: _319, offset: 4B]
+# dither_bench.cpp:59:       pixels[i * width + j + 2] += 1 * err;
+	movl	%eax, %r15d	# tmp492, tmp498
+	xorl	%edx, %r15d	# _310, tmp498
+	andl	$-2139062144, %r15d	#, tmp499
+	andl	$2139062143, %edx	#, tmp500
+# dither_bench.cpp:49:     for (j = 1; j < width - 1; j++) {
+	addq	$4, %rdi	#, ivtmp.392
+# dither_bench.cpp:59:       pixels[i * width + j + 2] += 1 * err;
+	addl	%ecx, %edx	# _5, tmp501
+	xorl	%r15d, %edx	# tmp499, tmp502
+	movl	%edx, 8(%rsi)	# tmp502, MEM[base: _319, offset: 8B]
+# dither_bench.cpp:60:       pixels[(i + 1) * width + j - 1] += 1 * err;
+	movl	-4(%rdi), %edx	# MEM[base: _294, offset: 0B], _281
+	movl	%edx, %r15d	# _281, tmp503
+	xorl	%eax, %edx	# tmp492, tmp505
+	andl	$2139062143, %r15d	#, tmp503
+	andl	$-2139062144, %edx	#, tmp506
+	addl	%ecx, %r15d	# _5, tmp504
+	xorl	%r15d, %edx	# tmp504, tmp507
+	movl	%edx, -4(%rdi)	# tmp507, MEM[base: _294, offset: 0B]
+# dither_bench.cpp:61:       pixels[(i + 1) * width + j + 0] += 1 * err;
+	movl	(%rdi), %edx	# MEM[base: _294, offset: 4B], _84
+	movl	%edx, %r15d	# _84, tmp508
+	andl	$2139062143, %edx	#, tmp510
+	xorl	%eax, %r15d	# tmp492, tmp508
+	addl	%ecx, %edx	# _5, tmp511
+	andl	$-2139062144, %r15d	#, tmp509
+	xorl	%r15d, %edx	# tmp509, tmp512
+# dither_bench.cpp:62:       pixels[(i + 1) * width + j + 1] += 1 * err;
+	movl	%eax, %r15d	# tmp492, tmp513
+# dither_bench.cpp:61:       pixels[(i + 1) * width + j + 0] += 1 * err;
+	movl	%edx, (%rdi)	# tmp512, MEM[base: _294, offset: 4B]
+# dither_bench.cpp:62:       pixels[(i + 1) * width + j + 1] += 1 * err;
+	movl	4(%rdi), %edx	# MEM[base: _294, offset: 8B], _337
+	xorl	%edx, %r15d	# _337, tmp513
+	andl	$2139062143, %edx	#, tmp515
+	addl	%ecx, %edx	# _5, tmp516
+	andl	$-2139062144, %r15d	#, tmp514
+	xorl	%r15d, %edx	# tmp514, tmp517
+	movl	%edx, 4(%rdi)	# tmp517, MEM[base: _294, offset: 8B]
+# dither_bench.cpp:63:       pixels[(i + 2) * width + j + 0] += 1 * err;
+	movl	(%rsi,%r8,4), %edx	# MEM[base: _319, index: _287, step: 4, offset: 0B], _346
+	xorl	%edx, %eax	# _346, tmp518
+	andl	$2139062143, %edx	#, tmp520
+	andl	$-2139062144, %eax	#, tmp519
+	addl	%edx, %ecx	# tmp520, tmp521
+	xorl	%eax, %ecx	# tmp519, tmp522
+	movl	%ecx, (%rsi,%r8,4)	# tmp522, MEM[base: _319, index: _287, step: 4, offset: 0B]
+# dither_bench.cpp:49:     for (j = 1; j < width - 1; j++) {
+	addq	$4, %rsi	#, ivtmp.389
+	cmpq	%rsi, %r9	# ivtmp.389, ivtmp.409
+	jne	.L23	#,
+# dither_bench.cpp:49:     for (j = 1; j < width - 1; j++) {
+	movq	%r14, %rsi	# width.0_1, prephitmp_327
+.L22:
+# dither_bench.cpp:66:     v = pixels[i * width + j];
+	movl	(%rbx), %eax	# *prephitmp_326, _86
+# dither_bench.cpp:67:     o = v > 127;
+	xorl	%ecx, %ecx	# tmp523
+# dither_bench.cpp:74:     pixels[(i + 1) * width + j - 1] += 1 * err;
+	addq	%rsi, %r10	# prephitmp_327, tmp555
+	salq	$2, %r10	#, _93
+# dither_bench.cpp:67:     o = v > 127;
+	movl	%eax, %edx	# _86, tmp524
+# dither_bench.cpp:68:     o[3] = v[3];
+	movl	%eax, %edi	# _86, tmp546
+# dither_bench.cpp:67:     o = v > 127;
+	sarb	$7, %dl	#, tmp524
+# dither_bench.cpp:68:     o[3] = v[3];
+	andl	$-16777216, %edi	#, tmp546
+# dither_bench.cpp:67:     o = v > 127;
+	movb	%dl, %cl	# tmp524, tmp523
+	movsbl	%ah, %edx	# _86, tmp526
+	sarb	$7, %dl	#, tmp525
+	movb	%dl, %ch	# tmp525, tmp523
+	movl	%eax, %edx	# _86, tmp530
+	sall	$8, %edx	#, tmp530
+	movzwl	%cx, %ecx	# tmp523, tmp534
+	sarl	$15, %edx	#, tmp531
+	andl	$16711680, %edx	#, tmp532
+# dither_bench.cpp:68:     o[3] = v[3];
+	orl	%ecx, %edx	# tmp534, tmp547
+# dither_bench.cpp:70:     err -= o;
+	movl	%eax, %ecx	# _86, tmp549
+	orl	$-2139062144, %eax	#, _86
+# dither_bench.cpp:68:     o[3] = v[3];
+	orl	%edi, %edx	# tmp546, tmp548
+# dither_bench.cpp:70:     err -= o;
+	xorl	%edx, %ecx	# tmp548, tmp549
+	movl	%edx, %r15d	# tmp548, tmp553
+# dither_bench.cpp:73:     pixels[i * width + j + 0] = o;
+	movl	%edx, (%rbx)	# tmp548, *prephitmp_326
+# dither_bench.cpp:71:     err >>= 4;
+	xorl	%edx, %edx	# err
+# dither_bench.cpp:74:     pixels[(i + 1) * width + j - 1] += 1 * err;
+	leaq	-4(%r12,%r10), %rbx	#, _95
+# dither_bench.cpp:70:     err -= o;
+	notl	%ecx	# tmp550
+	andl	$2139062143, %r15d	#, tmp553
+	movl	%ecx, %edi	# tmp550, tmp550
+	movl	%eax, %ecx	# _86, tmp552
+	andl	$-2139062144, %edi	#, tmp550
+	subl	%r15d, %ecx	# tmp553, tmp554
+	xorl	%edi, %ecx	# tmp551, _370
+# dither_bench.cpp:74:     pixels[(i + 1) * width + j - 1] += 1 * err;
+	movl	(%rbx), %edi	# *_95, _380
+# dither_bench.cpp:71:     err >>= 4;
+	movl	%ecx, %eax	# _370, tmp558
+	movl	%ecx, %r15d	# _370, tmp562
+	sarb	$4, %al	#, tmp558
+	sall	$8, %r15d	#, tmp562
+	movb	%al, %dl	# tmp558, err
+	movsbl	%ch, %eax	# _370, tmp559
+	sarl	$12, %r15d	#, tmp565
+	sarb	$4, %al	#, tmp560
+	andl	$16711680, %r15d	#, tmp566
+	sarl	$28, %ecx	#, tmp571
+	movb	%al, %dh	# tmp560, err
+	sall	$24, %ecx	#, tmp573
+	movzwl	%dx, %edx	# err, tmp568
+	movl	%edx, %eax	# tmp568, tmp568
+# dither_bench.cpp:74:     pixels[(i + 1) * width + j - 1] += 1 * err;
+	movl	%edi, %edx	# _380, tmp576
+	andl	$2139062143, %edi	#, tmp578
+# dither_bench.cpp:71:     err >>= 4;
+	orl	%r15d, %eax	# tmp566, tmp568
+	orl	%ecx, %eax	# tmp573, tmp575
+# dither_bench.cpp:74:     pixels[(i + 1) * width + j - 1] += 1 * err;
+	movl	%eax, %ecx	# tmp575, _383
+	xorl	%eax, %edx	# tmp575, tmp576
+	andl	$2139062143, %ecx	#, _383
+	andl	$-2139062144, %edx	#, tmp577
+	addl	%ecx, %edi	# _383, tmp579
+	xorl	%edx, %edi	# tmp577, tmp580
+# dither_bench.cpp:75:     pixels[(i + 1) * width + j + 0] += 1 * err;
+	addq	%r12, %r10	# pixels.1_4, _99
+# dither_bench.cpp:76:     pixels[(i + 2) * width + j + 0] += 1 * err;
+	addq	%rbp, %rsi	# ivtmp.406, tmp586
+# dither_bench.cpp:74:     pixels[(i + 1) * width + j - 1] += 1 * err;
+	movl	%edi, (%rbx)	# tmp580, *_95
+# dither_bench.cpp:75:     pixels[(i + 1) * width + j + 0] += 1 * err;
+	movl	(%r10), %edx	# *_99, _390
+	movl	%eax, %edi	# tmp575, tmp581
+# dither_bench.cpp:30:   for (i = start_h; i < start_h+height - 1; i++) {
+	addq	%r14, %rbp	# width.0_1, ivtmp.406
+# dither_bench.cpp:76:     pixels[(i + 2) * width + j + 0] += 1 * err;
+	leaq	(%r12,%rsi,4), %rsi	#, _104
+# dither_bench.cpp:75:     pixels[(i + 1) * width + j + 0] += 1 * err;
+	xorl	%edx, %edi	# _390, tmp581
+	andl	$2139062143, %edx	#, tmp583
+	addl	%ecx, %edx	# _383, tmp584
+	andl	$-2139062144, %edi	#, tmp582
+	xorl	%edi, %edx	# tmp582, tmp585
+	movl	%edx, (%r10)	# tmp585, *_99
+# dither_bench.cpp:76:     pixels[(i + 2) * width + j + 0] += 1 * err;
+	movl	(%rsi), %edx	# *_104, _399
+	xorl	%edx, %eax	# _399, tmp588
+	andl	$2139062143, %edx	#, tmp590
+	andl	$-2139062144, %eax	#, tmp589
+	addl	%edx, %ecx	# tmp590, tmp591
+	xorl	%eax, %ecx	# tmp589, tmp592
+# dither_bench.cpp:30:   for (i = start_h; i < start_h+height - 1; i++) {
+	movq	24(%rsp), %rax	# %sfp, _271
+# dither_bench.cpp:76:     pixels[(i + 2) * width + j + 0] += 1 * err;
+	movl	%ecx, (%rsi)	# tmp592, *_104
+# dither_bench.cpp:30:   for (i = start_h; i < start_h+height - 1; i++) {
+	addq	%rax, %r11	# _271, ivtmp.404
+	addq	%rax, %r9	# _271, ivtmp.409
+	cmpq	8(%rsp), %r13	# %sfp, start_h
+	je	.L38	#,
+	addq	$1, %r13	#, start_h
+	jmp	.L25	#
+	.p2align 4,,10
+	.p2align 3
+.L38:
+# dither_bench.cpp:136: }
+	addq	$40, %rsp	#,
+	.cfi_remember_state
+	.cfi_def_cfa_offset 56
+	popq	%rbx	#
+	.cfi_def_cfa_offset 48
+	popq	%rbp	#
+	.cfi_def_cfa_offset 40
+	popq	%r12	#
+	.cfi_def_cfa_offset 32
+	popq	%r13	#
+	.cfi_def_cfa_offset 24
+	popq	%r14	#
+	.cfi_def_cfa_offset 16
+	popq	%r15	#
+	.cfi_def_cfa_offset 8
+	ret	
+	.p2align 4,,10
+	.p2align 3
+.L27:
+	.cfi_restore_state
+# dither_bench.cpp:49:     for (j = 1; j < width - 1; j++) {
+	movl	$2, %esi	#, prephitmp_327
+	jmp	.L22	#
+.L18:
+# /usr/include/c++/10/bits/locale_facets.h:876: 	this->_M_widen_init();
+	movq	%r14, %rdi	# _163,
+	call	_ZNKSt5ctypeIcE13_M_widen_initEv@PLT	#
+# /usr/include/c++/10/bits/locale_facets.h:877: 	return this->do_widen(__c);
+	movq	(%r14), %rax	# MEM[(const struct ctype *)_163].D.36818._vptr.facet, MEM[(const struct ctype *)_163].D.36818._vptr.facet
+	movl	$10, %esi	#, _260
+	leaq	_ZNKSt5ctypeIcE8do_widenEc(%rip), %rdx	#, tmp353
+	movq	48(%rax), %rax	# MEM[(int (*) () *)_175 + 48B], _176
+	cmpq	%rdx, %rax	# tmp353, _176
+	je	.L19	#,
+# /usr/include/c++/10/bits/locale_facets.h:877: 	return this->do_widen(__c);
+	movq	%r14, %rdi	# _163,
+	call	*%rax	# _176
+# /usr/include/c++/10/ostream:682:     { return flush(__os.put(__os.widen('\n'))); }
+	movsbl	%al, %esi	# tmp603, _260
+	jmp	.L19	#
+.L40:
+# /usr/include/c++/10/bits/std_mutex.h:104: 	__throw_system_error(__e);
+	movl	%eax, %edi	# _165,
+	call	_ZSt20__throw_system_errori@PLT	#
+.L41:
+# /usr/include/c++/10/bits/basic_ios.h:50: 	__throw_bad_cast();
+	call	_ZSt16__throw_bad_castv@PLT	#
+	.cfi_endproc
+.LFE8518:
+	.size	_Z6dithermm, .-_Z6dithermm
+	.align 2
+	.p2align 4
+	.type	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEE6_M_runEv, @function
+_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEE6_M_runEv:
+.LFB9446:
+	.cfi_startproc
+# dither_bench.cpp:152: 				dither(0, chunkSize);
+	movq	8(%rdi), %rsi	# MEM[(const struct ._anon_120 *)this_1(D) + 8B].__chunkSize, MEM[(const struct ._anon_120 *)this_1(D) + 8B].__chunkSize
+	xorl	%edi, %edi	#
+	jmp	_Z6dithermm	#
+	.cfi_endproc
+.LFE9446:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEE6_M_runEv, .-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEE6_M_runEv
+	.align 2
+	.p2align 4
+	.type	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEE6_M_runEv, @function
+_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEE6_M_runEv:
+.LFB9445:
+	.cfi_startproc
+# dither_bench.cpp:156: 					dither(chunkSize*i , chunkSize);
+	movq	8(%rdi), %rsi	# MEM[(const struct ._anon_121 *)this_1(D) + 8B].__chunkSize, _3
+# dither_bench.cpp:156: 					dither(chunkSize*i , chunkSize);
+	movslq	16(%rdi), %rdi	# MEM[(const struct ._anon_121 *)this_1(D) + 8B].__i, MEM[(const struct ._anon_121 *)this_1(D) + 8B].__i
+# dither_bench.cpp:156: 					dither(chunkSize*i , chunkSize);
+	imulq	%rsi, %rdi	# _3, tmp89
+	jmp	_Z6dithermm	#
+	.cfi_endproc
+.LFE9445:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEE6_M_runEv, .-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEE6_M_runEv
+	.align 2
+	.p2align 4
+	.type	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEE6_M_runEv, @function
+_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEE6_M_runEv:
+.LFB9444:
+	.cfi_startproc
+# dither_bench.cpp:160: 					dither(chunkSize*i, remainder ? chunkSize : chunkSize-3);
+	movq	8(%rdi), %rax	# MEM[(const struct ._anon_122 *)this_1(D) + 8B].__chunkSize, pretmp_15
+# dither_bench.cpp:160: 					dither(chunkSize*i, remainder ? chunkSize : chunkSize-3);
+	cmpq	$0, 24(%rdi)	#, MEM[(const struct ._anon_122 *)this_1(D) + 8B].__remainder
+	movq	%rax, %rsi	# pretmp_15, iftmp.94_7
+	jne	.L45	#,
+	leaq	-3(%rax), %rsi	#, iftmp.94_7
+.L45:
+# dither_bench.cpp:160: 					dither(chunkSize*i, remainder ? chunkSize : chunkSize-3);
+	movslq	16(%rdi), %rdi	# MEM[(const struct ._anon_122 *)this_1(D) + 8B].__i, MEM[(const struct ._anon_122 *)this_1(D) + 8B].__i
+# dither_bench.cpp:160: 					dither(chunkSize*i, remainder ? chunkSize : chunkSize-3);
+	imulq	%rax, %rdi	# pretmp_15, tmp91
+	jmp	_Z6dithermm	#
+	.cfi_endproc
+.LFE9444:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEE6_M_runEv, .-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEE6_M_runEv
+	.align 2
+	.p2align 4
+	.type	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEE6_M_runEv, @function
+_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEE6_M_runEv:
+.LFB9443:
+	.cfi_startproc
+# dither_bench.cpp:164: 					dither(chunkSize*hw, remainder-3);
+	movq	24(%rdi), %rax	# MEM[(const struct ._anon_123 *)this_1(D) + 8B].__remainder, tmp94
+	leaq	-3(%rax), %rsi	#, tmp89
+# dither_bench.cpp:164: 					dither(chunkSize*hw, remainder-3);
+	movl	16(%rdi), %eax	# MEM[(const struct ._anon_123 *)this_1(D) + 8B].__hw, MEM[(const struct ._anon_123 *)this_1(D) + 8B].__hw
+# dither_bench.cpp:164: 					dither(chunkSize*hw, remainder-3);
+	imulq	8(%rdi), %rax	# MEM[(const struct ._anon_123 *)this_1(D) + 8B].__chunkSize, MEM[(const struct ._anon_123 *)this_1(D) + 8B].__hw
+	movq	%rax, %rdi	# MEM[(const struct ._anon_123 *)this_1(D) + 8B].__hw, tmp92
+	jmp	_Z6dithermm	#
+	.cfi_endproc
+.LFE9443:
+	.size	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEE6_M_runEv, .-_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEE6_M_runEv
+	.p2align 4
+	.globl	_Z9grayscalev
+	.type	_Z9grayscalev, @function
+_Z9grayscalev:
+.LFB8519:
+	.cfi_startproc
+# dither_bench.cpp:142: }
+	ret	
+	.cfi_endproc
+.LFE8519:
+	.size	_Z9grayscalev, .-_Z9grayscalev
+	.section	.rodata._ZNSt6vectorISt6threadSaIS0_EE17_M_realloc_insertIJS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_.str1.1,"aMS",@progbits,1
+.LC3:
+	.string	"vector::_M_realloc_insert"
+	.section	.text._ZNSt6vectorISt6threadSaIS0_EE17_M_realloc_insertIJS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_,"axG",@progbits,_ZNSt6vectorISt6threadSaIS0_EE17_M_realloc_insertIJS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_,comdat
+	.align 2
+	.p2align 4
+	.weak	_ZNSt6vectorISt6threadSaIS0_EE17_M_realloc_insertIJS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_
+	.type	_ZNSt6vectorISt6threadSaIS0_EE17_M_realloc_insertIJS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_, @function
+_ZNSt6vectorISt6threadSaIS0_EE17_M_realloc_insertIJS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_:
+.LFB9057:
+	.cfi_startproc
+	pushq	%r15	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 15, -16
+	pushq	%r14	#
+	.cfi_def_cfa_offset 24
+	.cfi_offset 14, -24
+	pushq	%r13	#
+	.cfi_def_cfa_offset 32
+	.cfi_offset 13, -32
+	pushq	%r12	#
+	.cfi_def_cfa_offset 40
+	.cfi_offset 12, -40
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 48
+	.cfi_offset 6, -48
+	pushq	%rbx	#
+	.cfi_def_cfa_offset 56
+	.cfi_offset 3, -56
+# /usr/include/c++/10/bits/stl_vector.h:1758: 	if (max_size() - size() < __n)
+	movabsq	$1152921504606846975, %rbx	#, tmp121
+# /usr/include/c++/10/bits/vector.tcc:426:       vector<_Tp, _Alloc>::
+	subq	$40, %rsp	#,
+	.cfi_def_cfa_offset 96
+	movq	8(%rdi), %r14	# MEM[(struct thread * *)this_11(D) + 8B], _48
+	movq	(%rdi), %r12	# MEM[(struct thread * *)this_11(D)], _47
+# /usr/include/c++/10/bits/stl_vector.h:919:       { return size_type(this->_M_impl._M_finish - this->_M_impl._M_start); }
+	movq	%r14, %rax	# _48, tmp119
+	subq	%r12, %rax	# _47, tmp119
+	sarq	$3, %rax	#, tmp120
+# /usr/include/c++/10/bits/stl_vector.h:1758: 	if (max_size() - size() < __n)
+	cmpq	%rbx, %rax	# tmp121, tmp120
+	je	.L68	#,
+	testq	%rax, %rax	# tmp120
+	movl	$1, %ecx	#, tmp123
+	movq	%rsi, %rbp	# tmp141, __position
+	cmovne	%rax, %rcx	# tmp120,, tmp122
+	movq	%rdi, %r13	# tmp140, this
+	addq	%rcx, %rax	# tmp122, tmp124
+	setc	%cl	#, _41
+# /usr/include/c++/10/bits/stl_iterator.h:1205:     { return __lhs.base() - __rhs.base(); }
+	subq	%r12, %rsi	# _47, _67
+	movzbl	%cl, %ecx	# _41, _41
+# /usr/include/c++/10/bits/stl_vector.h:1762: 	return (__len < size() || __len > max_size()) ? max_size() : __len;
+	testq	%rcx, %rcx	# _41
+	jne	.L60	#,
+# /usr/include/c++/10/bits/stl_vector.h:346: 	return __n != 0 ? _Tr::allocate(_M_impl, __n) : pointer();
+	testq	%rax, %rax	# tmp124
+	jne	.L54	#,
+	movl	$8, %ebx	#, __cur
+	xorl	%r15d, %r15d	# _50
+	movq	$0, 8(%rsp)	#, %sfp
+.L59:
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	(%rdx), %rax	# MEM[(struct id &)__args#0_4(D)], MEM[(struct id &)__args#0_4(D)]
+# /usr/include/c++/10/bits/move.h:199:       __b = _GLIBCXX_MOVE(__tmp);
+	movq	$0, (%rdx)	#, MEM[(struct id *)__args#0_4(D)]._M_thread
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	%rax, (%r15,%rsi)	# MEM[(struct id &)__args#0_4(D)], MEM[(struct id *)_3]
+# /usr/include/c++/10/bits/stl_uninitialized.h:1013:       for (; __first != __last; ++__first, (void)++__cur)
+	cmpq	%r12, %rbp	# _47, __position
+	je	.L55	#,
+	movq	%rbp, %rsi	# __position, _18
+# /usr/include/c++/10/bits/stl_uninitialized.h:1012:       _ForwardIterator __cur = __result;
+	movq	%r15, %rdx	# _50, __cur
+# /usr/include/c++/10/bits/stl_uninitialized.h:1013:       for (; __first != __last; ++__first, (void)++__cur)
+	movq	%r12, %rax	# _47, __first
+	subq	%r12, %rsi	# _47, _18
+	.p2align 4,,10
+	.p2align 3
+.L56:
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	(%rax), %rcx	# MEM[base: __first_71, offset: 0], MEM[base: __first_71, offset: 0]
+# /usr/include/c++/10/bits/stl_uninitialized.h:1013:       for (; __first != __last; ++__first, (void)++__cur)
+	addq	$8, %rax	#, __first
+# /usr/include/c++/10/bits/stl_uninitialized.h:1013:       for (; __first != __last; ++__first, (void)++__cur)
+	addq	$8, %rdx	#, __cur
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	%rcx, -8(%rdx)	# MEM[base: __first_71, offset: 0], MEM[base: __cur_81, offset: 0B]
+# /usr/include/c++/10/bits/stl_uninitialized.h:1013:       for (; __first != __last; ++__first, (void)++__cur)
+	cmpq	%rbp, %rax	# __position, __first
+	jne	.L56	#,
+# /usr/include/c++/10/bits/vector.tcc:464: 	      ++__new_finish;
+	leaq	8(%r15,%rsi), %rbx	#, __cur
+.L55:
+# /usr/include/c++/10/bits/stl_uninitialized.h:1013:       for (; __first != __last; ++__first, (void)++__cur)
+	cmpq	%r14, %rbp	# _48, __position
+	je	.L57	#,
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	subq	%rbp, %r14	# __position, _7
+	movq	%rbx, %rdi	# __cur,
+	movq	%rbp, %rsi	# __position,
+	movq	%r14, %rdx	# _7,
+# /usr/include/c++/10/bits/stl_uninitialized.h:1013:       for (; __first != __last; ++__first, (void)++__cur)
+	addq	%r14, %rbx	# _7, __cur
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	call	memcpy@PLT	#
+.L57:
+# /usr/include/c++/10/bits/stl_vector.h:353: 	if (__p)
+	testq	%r12, %r12	# _47
+	je	.L58	#,
+# /usr/include/c++/10/bits/vector.tcc:501: 		    this->_M_impl._M_end_of_storage - __old_start);
+	movq	16(%r13), %rsi	# this_11(D)->D.93649._M_impl.D.92960._M_end_of_storage, tmp133
+# /usr/include/c++/10/ext/new_allocator.h:133: 	::operator delete(__p
+	movq	%r12, %rdi	# _47,
+# /usr/include/c++/10/bits/vector.tcc:501: 		    this->_M_impl._M_end_of_storage - __old_start);
+	subq	%r12, %rsi	# _47, tmp133
+# /usr/include/c++/10/ext/new_allocator.h:133: 	::operator delete(__p
+	call	_ZdlPvm@PLT	#
+.L58:
+# /usr/include/c++/10/bits/vector.tcc:504:       this->_M_impl._M_end_of_storage = __new_start + __len;
+	movq	8(%rsp), %rax	# %sfp, prephitmp_35
+# /usr/include/c++/10/bits/vector.tcc:502:       this->_M_impl._M_start = __new_start;
+	vmovq	%r15, %xmm1	# _50, _50
+	vpinsrq	$1, %rbx, %xmm1, %xmm0	# __cur, _50, tmp135
+	vmovdqu	%xmm0, 0(%r13)	# tmp135, MEM <vector(2) long unsigned int> [(struct thread * *)this_11(D)]
+# /usr/include/c++/10/bits/vector.tcc:504:       this->_M_impl._M_end_of_storage = __new_start + __len;
+	movq	%rax, 16(%r13)	# prephitmp_35, this_11(D)->D.93649._M_impl.D.92960._M_end_of_storage
+# /usr/include/c++/10/bits/vector.tcc:505:     }
+	addq	$40, %rsp	#,
+	.cfi_remember_state
+	.cfi_def_cfa_offset 56
+	popq	%rbx	#
+	.cfi_def_cfa_offset 48
+	popq	%rbp	#
+	.cfi_def_cfa_offset 40
+	popq	%r12	#
+	.cfi_def_cfa_offset 32
+	popq	%r13	#
+	.cfi_def_cfa_offset 24
+	popq	%r14	#
+	.cfi_def_cfa_offset 16
+	popq	%r15	#
+	.cfi_def_cfa_offset 8
+	ret	
+	.p2align 4,,10
+	.p2align 3
+.L54:
+	.cfi_restore_state
+# /usr/include/c++/10/ext/new_allocator.h:115: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	cmpq	%rbx, %rax	# tmp121, tmp124
+	cmova	%rbx, %rax	# tmp124,, tmp121, tmp136
+	leaq	0(,%rax,8), %rbx	#, prephitmp_65
+.L53:
+	movq	%rbx, %rdi	# prephitmp_65,
+	movq	%rdx, 24(%rsp)	# __args#0, %sfp
+	movq	%rsi, 16(%rsp)	# _67, %sfp
+	call	_Znwm@PLT	#
+	movq	16(%rsp), %rsi	# %sfp, _67
+	movq	%rax, %r15	# tmp143, _50
+# /usr/include/c++/10/bits/vector.tcc:504:       this->_M_impl._M_end_of_storage = __new_start + __len;
+	addq	%rbx, %rax	# prephitmp_65, prephitmp_35
+	movq	24(%rsp), %rdx	# %sfp, __args#0
+	movq	%rax, 8(%rsp)	# prephitmp_35, %sfp
+# /usr/include/c++/10/bits/stl_uninitialized.h:1013:       for (; __first != __last; ++__first, (void)++__cur)
+	leaq	8(%r15), %rbx	#, __cur
+	jmp	.L59	#
+	.p2align 4,,10
+	.p2align 3
+.L60:
+	movabsq	$9223372036854775800, %rbx	#, prephitmp_65
+	jmp	.L53	#
+.L68:
+# /usr/include/c++/10/bits/stl_vector.h:1759: 	  __throw_length_error(__N(__s));
+	leaq	.LC3(%rip), %rdi	#,
+	call	_ZSt20__throw_length_errorPKc@PLT	#
+	.cfi_endproc
+.LFE9057:
+	.size	_ZNSt6vectorISt6threadSaIS0_EE17_M_realloc_insertIJS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_, .-_ZNSt6vectorISt6threadSaIS0_EE17_M_realloc_insertIJS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_
+	.section	.text.unlikely,"ax",@progbits
+.LCOLDB4:
+	.text
+.LHOTB4:
+	.p2align 4
+	.globl	_Z12dither_multiv
+	.type	_Z12dither_multiv, @function
+_Z12dither_multiv:
+.LFB8520:
+	.cfi_startproc
+	.cfi_personality 0x9b,DW.ref.__gxx_personality_v0
+	.cfi_lsda 0x1b,.LLSDA8520
+	pushq	%r15	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 15, -16
+	pushq	%r14	#
+	.cfi_def_cfa_offset 24
+	.cfi_offset 14, -24
+	pushq	%r13	#
+	.cfi_def_cfa_offset 32
+	.cfi_offset 13, -32
+	pushq	%r12	#
+	.cfi_def_cfa_offset 40
+	.cfi_offset 12, -40
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 48
+	.cfi_offset 6, -48
+	pushq	%rbx	#
+	.cfi_def_cfa_offset 56
+	.cfi_offset 3, -56
+	subq	$120, %rsp	#,
+	.cfi_def_cfa_offset 176
+# dither_bench.cpp:145: 	const auto hw = std::thread::hardware_concurrency();
+	call	_ZNSt6thread20hardware_concurrencyEv@PLT	#
+	xorl	%edx, %edx	# tmp180
+# /usr/include/c++/10/bits/stl_vector.h:98: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	vpxor	%xmm0, %xmm0, %xmm0	# tmp182
+	movq	$0, 96(%rsp)	#, MEM[(struct _Vector_impl_data *)&threads]._M_end_of_storage
+# dither_bench.cpp:145: 	const auto hw = std::thread::hardware_concurrency();
+	movl	%eax, %ebx	# tmp270,
+	movq	_ZL6height(%rip), %rax	# height, height
+# /usr/include/c++/10/bits/stl_vector.h:98: 	: _M_start(), _M_finish(), _M_end_of_storage()
+	vmovdqa	%xmm0, 80(%rsp)	# tmp182, MEM <vector(2) long unsigned int> [(struct thread * *)&threads]
+# dither_bench.cpp:145: 	const auto hw = std::thread::hardware_concurrency();
+	movl	%ebx, 24(%rsp)	# hw, %sfp
+	divq	%rbx	# hw
+# dither_bench.cpp:149: 	threads.reserve(hw+1);
+	addl	$1, %ebx	#, _5
+	movq	%rdx, 16(%rsp)	# tmp180, %sfp
+	movq	%rax, %rbp	# height, tmp179
+# /usr/include/c++/10/bits/vector.tcc:71:       if (this->capacity() < __n)
+	testq	%rbx, %rbx	# _5
+	jne	.L183	#,
+.L70:
+# /usr/include/c++/10/thread:93:       id() noexcept : _M_thread() { }
+	movq	$0, 40(%rsp)	#, MEM[(struct id *)&D.93815]._M_thread
+# /usr/include/c++/10/thread:226: 	return _State_ptr{new _Impl{std::forward<_Args>(__args)...}};
+	movl	$16, %edi	#,
+.LEHB0:
+	call	_Znwm@PLT	#
+.LEHE0:
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	movq	pthread_create@GOTPCREL(%rip), %r14	#, tmp268
+# /usr/include/c++/10/thread:211: 	  : _M_func{{std::forward<_Args>(__args)...}}
+	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE(%rip), %rcx	#, tmp291
+# /usr/include/c++/10/tuple:137: 	: _M_head_impl(std::forward<_UHead>(__h)) { }
+	movq	%rbp, 8(%rax)	# tmp179, MEM[(struct _Head_base *)_115 + 8B]._M_head_impl.__chunkSize
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	leaq	72(%rsp), %r13	#, tmp267
+# /usr/include/c++/10/thread:211: 	  : _M_func{{std::forward<_Args>(__args)...}}
+	movq	%rcx, (%rax)	# tmp291, MEM[(struct _State_impl *)_115].D.99623._vptr._State
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	leaq	40(%rsp), %r12	#, tmp263
+	movq	%r13, %rsi	# tmp267,
+# /usr/include/c++/10/bits/unique_ptr.h:155:       __uniq_ptr_impl(pointer __p) : _M_t() { _M_ptr() = __p; }
+	movq	%rax, 72(%rsp)	# tmp191, MEM[(struct _State * &)_293]
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	movq	%r12, %rdi	# tmp263,
+	movq	%r14, %rdx	# tmp268,
+.LEHB1:
+	call	_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE@PLT	#
+.LEHE1:
+# /usr/include/c++/10/bits/unique_ptr.h:360: 	if (__ptr != nullptr)
+	movq	72(%rsp), %rdi	# MEM[(struct _State * &)_293], _116
+# /usr/include/c++/10/bits/unique_ptr.h:360: 	if (__ptr != nullptr)
+	testq	%rdi, %rdi	# _116
+	je	.L75	#,
+# /usr/include/c++/10/bits/unique_ptr.h:85: 	delete __ptr;
+	movq	(%rdi), %rax	# _116->_vptr._State, _116->_vptr._State
+	call	*8(%rax)	# MEM[(int (*) () *)_117 + 8B]
+.L75:
+# /usr/include/c++/10/bits/vector.tcc:112: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
+	movq	88(%rsp), %rsi	# threads.D.93649._M_impl.D.92960._M_finish, _122
+# /usr/include/c++/10/bits/vector.tcc:112: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
+	cmpq	96(%rsp), %rsi	# threads.D.93649._M_impl.D.92960._M_end_of_storage, _122
+	je	.L184	#,
+# /usr/include/c++/10/thread:93:       id() noexcept : _M_thread() { }
+	movq	$0, (%rsi)	#, MEM[(struct id *)_122]._M_thread
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	40(%rsp), %rax	# MEM[(struct id &)&D.93815], MEM[(struct id &)&D.93815]
+# /usr/include/c++/10/bits/vector.tcc:117: 	    ++this->_M_impl._M_finish;
+	addq	$8, %rsi	#, tmp205
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	%rax, -8(%rsi)	# MEM[(struct id &)&D.93815], MEM[(struct id *)_122]
+# /usr/include/c++/10/bits/vector.tcc:117: 	    ++this->_M_impl._M_finish;
+	movq	%rsi, 88(%rsp)	# tmp205, threads.D.93649._M_impl.D.92960._M_finish
+.L81:
+# dither_bench.cpp:154: 	for (i = 1; i < hw-1; i++) {
+	movl	24(%rsp), %eax	# %sfp, hw
+	subl	$1, %eax	#, _308
+	movl	%eax, 12(%rsp)	# _308, %sfp
+# dither_bench.cpp:154: 	for (i = 1; i < hw-1; i++) {
+	cmpl	$1, %eax	#, _308
+	jbe	.L117	#,
+	movl	%eax, 28(%rsp)	# _308, %sfp
+# /usr/include/c++/10/thread:211: 	  : _M_func{{std::forward<_Args>(__args)...}}
+	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE(%rip), %r15	#, tmp269
+# dither_bench.cpp:154: 	for (i = 1; i < hw-1; i++) {
+	movl	$1, %ebx	#, i
+	jmp	.L90	#
+	.p2align 4,,10
+	.p2align 3
+.L84:
+# /usr/include/c++/10/thread:93:       id() noexcept : _M_thread() { }
+	movq	$0, (%rsi)	#, MEM[(struct id *)_132]._M_thread
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	48(%rsp), %rax	# MEM[(struct id &)&D.93864], MEM[(struct id &)&D.93864]
+# /usr/include/c++/10/bits/vector.tcc:117: 	    ++this->_M_impl._M_finish;
+	addq	$8, %rsi	#, tmp220
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	%rax, -8(%rsi)	# MEM[(struct id &)&D.93864], MEM[(struct id *)_132]
+# /usr/include/c++/10/bits/vector.tcc:117: 	    ++this->_M_impl._M_finish;
+	movq	%rsi, 88(%rsp)	# tmp220, threads.D.93649._M_impl.D.92960._M_finish
+.L88:
+# dither_bench.cpp:154: 	for (i = 1; i < hw-1; i++) {
+	addl	$1, %ebx	#, i
+# dither_bench.cpp:154: 	for (i = 1; i < hw-1; i++) {
+	cmpl	12(%rsp), %ebx	# %sfp, i
+	je	.L82	#,
+.L90:
+# /usr/include/c++/10/thread:93:       id() noexcept : _M_thread() { }
+	movq	$0, 48(%rsp)	#, MEM[(struct id *)&D.93864]._M_thread
+# /usr/include/c++/10/thread:226: 	return _State_ptr{new _Impl{std::forward<_Args>(__args)...}};
+	movl	$24, %edi	#,
+.LEHB2:
+	call	_Znwm@PLT	#
+.LEHE2:
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	leaq	48(%rsp), %r12	#, tmp264
+# /usr/include/c++/10/thread:211: 	  : _M_func{{std::forward<_Args>(__args)...}}
+	movq	%r15, (%rax)	# tmp269, MEM[(struct _State_impl *)_125].D.101824._vptr._State
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	movq	%r14, %rdx	# tmp268,
+	movq	%r13, %rsi	# tmp267,
+# /usr/include/c++/10/tuple:137: 	: _M_head_impl(std::forward<_UHead>(__h)) { }
+	movq	%rbp, 8(%rax)	# tmp179, MEM[(struct _Head_base *)_125 + 8B]._M_head_impl.__chunkSize
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	movq	%r12, %rdi	# tmp264,
+# /usr/include/c++/10/tuple:137: 	: _M_head_impl(std::forward<_UHead>(__h)) { }
+	movl	%ebx, 16(%rax)	# i, MEM[(struct _Head_base *)_125 + 8B]._M_head_impl.__i
+# /usr/include/c++/10/bits/unique_ptr.h:155:       __uniq_ptr_impl(pointer __p) : _M_t() { _M_ptr() = __p; }
+	movq	%rax, 72(%rsp)	# tmp208, MEM[(struct _State * &)_293]
+.LEHB3:
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	call	_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE@PLT	#
+.LEHE3:
+# /usr/include/c++/10/bits/unique_ptr.h:360: 	if (__ptr != nullptr)
+	movq	72(%rsp), %rdi	# MEM[(struct _State * &)_293], _126
+# /usr/include/c++/10/bits/unique_ptr.h:360: 	if (__ptr != nullptr)
+	testq	%rdi, %rdi	# _126
+	je	.L83	#,
+# /usr/include/c++/10/bits/unique_ptr.h:85: 	delete __ptr;
+	movq	(%rdi), %rax	# _126->_vptr._State, _126->_vptr._State
+	call	*8(%rax)	# MEM[(int (*) () *)_127 + 8B]
+.L83:
+# /usr/include/c++/10/bits/vector.tcc:112: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
+	movq	88(%rsp), %rsi	# threads.D.93649._M_impl.D.92960._M_finish, _132
+# /usr/include/c++/10/bits/vector.tcc:112: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
+	cmpq	96(%rsp), %rsi	# threads.D.93649._M_impl.D.92960._M_end_of_storage, _132
+	jne	.L84	#,
+# /usr/include/c++/10/bits/vector.tcc:121: 	  _M_realloc_insert(end(), std::forward<_Args>(__args)...);
+	movq	%r12, %rdx	# tmp264,
+	leaq	80(%rsp), %rdi	#, tmp222
+.LEHB4:
+	call	_ZNSt6vectorISt6threadSaIS0_EE17_M_realloc_insertIJS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_	#
+.LEHE4:
+# /usr/include/c++/10/thread:156:       if (joinable())
+	cmpq	$0, 48(%rsp)	#, D.93864._M_id._M_thread
+	je	.L88	#,
+.L89:
+# /usr/include/c++/10/thread:157: 	std::terminate();
+	call	_ZSt9terminatev@PLT	#
+.L117:
+# dither_bench.cpp:154: 	for (i = 1; i < hw-1; i++) {
+	movl	$1, 28(%rsp)	#, %sfp
+	.p2align 4,,10
+	.p2align 3
+.L82:
+# /usr/include/c++/10/thread:93:       id() noexcept : _M_thread() { }
+	movq	$0, 56(%rsp)	#, MEM[(struct id *)&D.93912]._M_thread
+# /usr/include/c++/10/thread:226: 	return _State_ptr{new _Impl{std::forward<_Args>(__args)...}};
+	movl	$32, %edi	#,
+.LEHB5:
+	call	_Znwm@PLT	#
+.LEHE5:
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	leaq	56(%rsp), %r12	#, tmp265
+# /usr/include/c++/10/tuple:137: 	: _M_head_impl(std::forward<_UHead>(__h)) { }
+	movq	%rbp, 8(%rax)	# tmp179, MEM[(struct _Head_base *)_135 + 8B]._M_head_impl.__chunkSize
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	movq	%r14, %rdx	# tmp268,
+	movq	%r13, %rsi	# tmp267,
+# /usr/include/c++/10/thread:211: 	  : _M_func{{std::forward<_Args>(__args)...}}
+	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE(%rip), %rcx	#, tmp297
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	movq	%r12, %rdi	# tmp265,
+# /usr/include/c++/10/bits/unique_ptr.h:155:       __uniq_ptr_impl(pointer __p) : _M_t() { _M_ptr() = __p; }
+	movq	%rax, 72(%rsp)	# tmp223, MEM[(struct _State * &)_293]
+# /usr/include/c++/10/thread:211: 	  : _M_func{{std::forward<_Args>(__args)...}}
+	movq	%rcx, (%rax)	# tmp297, MEM[(struct _State_impl *)_135].D.103580._vptr._State
+# /usr/include/c++/10/tuple:137: 	: _M_head_impl(std::forward<_UHead>(__h)) { }
+	movl	28(%rsp), %ecx	# %sfp, i
+	movl	%ecx, 16(%rax)	# i, MEM[(struct _Head_base *)_135 + 8B]._M_head_impl.__i
+	movq	16(%rsp), %rcx	# %sfp, tmp180
+	movq	%rcx, 24(%rax)	# tmp180, MEM[(struct _Head_base *)_135 + 8B]._M_head_impl.__remainder
+.LEHB6:
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	call	_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE@PLT	#
+.LEHE6:
+# /usr/include/c++/10/bits/unique_ptr.h:360: 	if (__ptr != nullptr)
+	movq	72(%rsp), %rdi	# MEM[(struct _State * &)_293], _136
+# /usr/include/c++/10/bits/unique_ptr.h:360: 	if (__ptr != nullptr)
+	testq	%rdi, %rdi	# _136
+	je	.L91	#,
+# /usr/include/c++/10/bits/unique_ptr.h:85: 	delete __ptr;
+	movq	(%rdi), %rax	# _136->_vptr._State, _136->_vptr._State
+	call	*8(%rax)	# MEM[(int (*) () *)_137 + 8B]
+.L91:
+# /usr/include/c++/10/bits/vector.tcc:112: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
+	movq	88(%rsp), %rsi	# threads.D.93649._M_impl.D.92960._M_finish, _142
+# /usr/include/c++/10/bits/vector.tcc:112: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
+	cmpq	96(%rsp), %rsi	# threads.D.93649._M_impl.D.92960._M_end_of_storage, _142
+	je	.L185	#,
+# /usr/include/c++/10/thread:93:       id() noexcept : _M_thread() { }
+	movq	$0, (%rsi)	#, MEM[(struct id *)_142]._M_thread
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	56(%rsp), %rax	# MEM[(struct id &)&D.93912], MEM[(struct id &)&D.93912]
+# /usr/include/c++/10/bits/vector.tcc:117: 	    ++this->_M_impl._M_finish;
+	addq	$8, %rsi	#, tmp235
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	%rax, -8(%rsi)	# MEM[(struct id &)&D.93912], MEM[(struct id *)_142]
+# /usr/include/c++/10/bits/vector.tcc:117: 	    ++this->_M_impl._M_finish;
+	movq	%rsi, 88(%rsp)	# tmp235, threads.D.93649._M_impl.D.92960._M_finish
+.L96:
+# dither_bench.cpp:162: 	if (remainder) {
+	cmpq	$0, 16(%rsp)	#, %sfp
+	jne	.L97	#,
+.L178:
+# /usr/include/c++/10/bits/stl_iterator.h:979:       : _M_current(__i) { }
+	movq	88(%rsp), %rbp	# MEM[(struct thread * const &)&threads + 8], pretmp_354
+.L98:
+	movq	80(%rsp), %rbx	# MEM[(struct thread * const &)&threads], _63
+# dither_bench.cpp:167: 	for (auto&& t : threads) 
+	cmpq	%rbp, %rbx	# pretmp_354, _63
+	je	.L105	#,
+	.p2align 4,,10
+	.p2align 3
+.L106:
+# dither_bench.cpp:168: 		t.join();
+	movq	%rbx, %rdi	# ivtmp.483,
+.LEHB7:
+	call	_ZNSt6thread4joinEv@PLT	#
+# dither_bench.cpp:167: 	for (auto&& t : threads) 
+	addq	$8, %rbx	#, ivtmp.483
+	cmpq	%rbx, %rbp	# ivtmp.483, pretmp_354
+	jne	.L106	#,
+# /usr/include/c++/10/bits/stl_vector.h:680: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	movq	88(%rsp), %rdx	# threads.D.93649._M_impl.D.92960._M_finish, _155
+	movq	80(%rsp), %rbp	# threads.D.93649._M_impl.D.92960._M_start, pretmp_354
+# /usr/include/c++/10/bits/stl_construct.h:151: 	  for (; __first != __last; ++__first)
+	cmpq	%rbp, %rdx	# pretmp_354, _155
+	je	.L105	#,
+	movq	%rbp, %rax	# pretmp_354, __first
+	.p2align 4,,10
+	.p2align 3
+.L107:
+# /usr/include/c++/10/thread:156:       if (joinable())
+	cmpq	$0, (%rax)	#, MEM[base: __first_26, offset: 0B]
+	jne	.L89	#,
+# /usr/include/c++/10/bits/stl_construct.h:151: 	  for (; __first != __last; ++__first)
+	addq	$8, %rax	#, __first
+# /usr/include/c++/10/bits/stl_construct.h:151: 	  for (; __first != __last; ++__first)
+	cmpq	%rax, %rdx	# __first, _155
+	jne	.L107	#,
+.L105:
+# /usr/include/c++/10/bits/stl_vector.h:353: 	if (__p)
+	testq	%rbp, %rbp	# pretmp_354
+	je	.L176	#,
+# /usr/include/c++/10/bits/stl_vector.h:336: 		      _M_impl._M_end_of_storage - _M_impl._M_start);
+	movq	96(%rsp), %rsi	# MEM[(struct _Vector_base *)&threads]._M_impl.D.92960._M_end_of_storage, tmp252
+# /usr/include/c++/10/ext/new_allocator.h:133: 	::operator delete(__p
+	movq	%rbp, %rdi	# pretmp_354,
+# /usr/include/c++/10/bits/stl_vector.h:336: 		      _M_impl._M_end_of_storage - _M_impl._M_start);
+	subq	%rbp, %rsi	# pretmp_354, tmp252
+# /usr/include/c++/10/ext/new_allocator.h:133: 	::operator delete(__p
+	call	_ZdlPvm@PLT	#
+.L176:
+# dither_bench.cpp:169: }
+	addq	$120, %rsp	#,
+	.cfi_remember_state
+	.cfi_def_cfa_offset 56
+	popq	%rbx	#
+	.cfi_def_cfa_offset 48
+	popq	%rbp	#
+	.cfi_def_cfa_offset 40
+	popq	%r12	#
+	.cfi_def_cfa_offset 32
+	popq	%r13	#
+	.cfi_def_cfa_offset 24
+	popq	%r14	#
+	.cfi_def_cfa_offset 16
+	popq	%r15	#
+	.cfi_def_cfa_offset 8
+	ret	
+	.p2align 4,,10
+	.p2align 3
+.L97:
+	.cfi_restore_state
+# /usr/include/c++/10/thread:93:       id() noexcept : _M_thread() { }
+	movq	$0, 64(%rsp)	#, MEM[(struct id *)&D.93960]._M_thread
+# /usr/include/c++/10/thread:226: 	return _State_ptr{new _Impl{std::forward<_Args>(__args)...}};
+	movl	$32, %edi	#,
+	call	_Znwm@PLT	#
+.LEHE7:
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	leaq	64(%rsp), %r12	#, tmp266
+# /usr/include/c++/10/tuple:137: 	: _M_head_impl(std::forward<_UHead>(__h)) { }
+	movq	%rbp, 8(%rax)	# tmp179, MEM[(struct _Head_base *)_145 + 8B]._M_head_impl.__chunkSize
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	movq	%r14, %rdx	# tmp268,
+	movq	%r13, %rsi	# tmp267,
+# /usr/include/c++/10/thread:211: 	  : _M_func{{std::forward<_Args>(__args)...}}
+	leaq	16+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE(%rip), %rcx	#, tmp301
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	movq	%r12, %rdi	# tmp266,
+# /usr/include/c++/10/bits/unique_ptr.h:155:       __uniq_ptr_impl(pointer __p) : _M_t() { _M_ptr() = __p; }
+	movq	%rax, 72(%rsp)	# tmp238, MEM[(struct _State * &)_293]
+# /usr/include/c++/10/thread:211: 	  : _M_func{{std::forward<_Args>(__args)...}}
+	movq	%rcx, (%rax)	# tmp301, MEM[(struct _State_impl *)_145].D.105336._vptr._State
+# /usr/include/c++/10/tuple:137: 	: _M_head_impl(std::forward<_UHead>(__h)) { }
+	movl	24(%rsp), %ecx	# %sfp, hw
+	movl	%ecx, 16(%rax)	# hw, MEM[(struct _Head_base *)_145 + 8B]._M_head_impl.__hw
+	movq	16(%rsp), %rcx	# %sfp, tmp180
+	movq	%rcx, 24(%rax)	# tmp180, MEM[(struct _Head_base *)_145 + 8B]._M_head_impl.__remainder
+.LEHB8:
+# /usr/include/c++/10/thread:149: 	_M_start_thread(_S_make_state<_Invoker_type>(
+	call	_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE@PLT	#
+.LEHE8:
+# /usr/include/c++/10/bits/unique_ptr.h:360: 	if (__ptr != nullptr)
+	movq	72(%rsp), %rdi	# MEM[(struct _State * &)_293], _146
+# /usr/include/c++/10/bits/unique_ptr.h:360: 	if (__ptr != nullptr)
+	testq	%rdi, %rdi	# _146
+	je	.L99	#,
+# /usr/include/c++/10/bits/unique_ptr.h:85: 	delete __ptr;
+	movq	(%rdi), %rax	# _146->_vptr._State, _146->_vptr._State
+	call	*8(%rax)	# MEM[(int (*) () *)_147 + 8B]
+.L99:
+# /usr/include/c++/10/bits/vector.tcc:112: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
+	movq	88(%rsp), %rsi	# threads.D.93649._M_impl.D.92960._M_finish, _152
+# /usr/include/c++/10/bits/vector.tcc:112: 	if (this->_M_impl._M_finish != this->_M_impl._M_end_of_storage)
+	cmpq	96(%rsp), %rsi	# threads.D.93649._M_impl.D.92960._M_end_of_storage, _152
+	je	.L186	#,
+# /usr/include/c++/10/thread:93:       id() noexcept : _M_thread() { }
+	movq	$0, (%rsi)	#, MEM[(struct id *)_152]._M_thread
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	64(%rsp), %rax	# MEM[(struct id &)&D.93960], MEM[(struct id &)&D.93960]
+# /usr/include/c++/10/bits/vector.tcc:117: 	    ++this->_M_impl._M_finish;
+	leaq	8(%rsi), %rbp	#, pretmp_354
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	%rax, (%rsi)	# MEM[(struct id &)&D.93960], MEM[(struct id *)_152]
+# /usr/include/c++/10/bits/vector.tcc:117: 	    ++this->_M_impl._M_finish;
+	movq	%rbp, 88(%rsp)	# pretmp_354, threads.D.93649._M_impl.D.92960._M_finish
+	jmp	.L98	#
+	.p2align 4,,10
+	.p2align 3
+.L183:
+# /usr/include/c++/10/ext/new_allocator.h:115: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	salq	$3, %rbx	#, _112
+	movq	%rbx, %rdi	# _112,
+.LEHB9:
+	call	_Znwm@PLT	#
+.LEHE9:
+# /usr/include/c++/10/bits/vector.tcc:79: 	      _S_relocate(this->_M_impl._M_start, this->_M_impl._M_finish,
+	movq	80(%rsp), %rdi	# threads.D.93649._M_impl.D.92960._M_start, _100
+# /usr/include/c++/10/ext/new_allocator.h:115: 	return static_cast<_Tp*>(::operator new(__n * sizeof(_Tp)));
+	movq	%rax, %r12	# tmp271, _113
+# /usr/include/c++/10/bits/stl_uninitialized.h:1012:       _ForwardIterator __cur = __result;
+	movq	%rax, %rdx	# _113, __cur
+# /usr/include/c++/10/bits/vector.tcc:79: 	      _S_relocate(this->_M_impl._M_start, this->_M_impl._M_finish,
+	movq	88(%rsp), %rsi	# threads.D.93649._M_impl.D.92960._M_finish, _99
+# /usr/include/c++/10/bits/stl_uninitialized.h:1013:       for (; __first != __last; ++__first, (void)++__cur)
+	movq	%rdi, %rax	# _100, __first
+	cmpq	%rdi, %rsi	# _100, _99
+	je	.L74	#,
+	.p2align 4,,10
+	.p2align 3
+.L71:
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	(%rax), %rcx	# MEM[base: __first_18, offset: 0], MEM[base: __first_18, offset: 0]
+# /usr/include/c++/10/bits/stl_uninitialized.h:1013:       for (; __first != __last; ++__first, (void)++__cur)
+	addq	$8, %rax	#, __first
+# /usr/include/c++/10/bits/stl_uninitialized.h:1013:       for (; __first != __last; ++__first, (void)++__cur)
+	addq	$8, %rdx	#, __cur
+# /usr/include/c++/10/bits/move.h:198:       __a = _GLIBCXX_MOVE(__b);
+	movq	%rcx, -8(%rdx)	# MEM[base: __first_18, offset: 0], MEM[base: __cur_21, offset: 0B]
+# /usr/include/c++/10/bits/stl_uninitialized.h:1013:       for (; __first != __last; ++__first, (void)++__cur)
+	cmpq	%rax, %rsi	# __first, _99
+	jne	.L71	#,
+.L74:
+# /usr/include/c++/10/bits/stl_vector.h:353: 	if (__p)
+	testq	%rdi, %rdi	# _100
+	je	.L73	#,
+# /usr/include/c++/10/bits/vector.tcc:94: 			- this->_M_impl._M_start);
+	movq	96(%rsp), %rsi	# threads.D.93649._M_impl.D.92960._M_end_of_storage, tmp186
+	subq	%rdi, %rsi	# _100, tmp186
+# /usr/include/c++/10/ext/new_allocator.h:133: 	::operator delete(__p
+	call	_ZdlPvm@PLT	#
+.L73:
+# /usr/include/c++/10/bits/vector.tcc:95: 	  this->_M_impl._M_start = __tmp;
+	vmovq	%r12, %xmm1	# _113, _113
+# /usr/include/c++/10/bits/vector.tcc:97: 	  this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	addq	%r12, %rbx	# _113, tmp190
+# /usr/include/c++/10/bits/vector.tcc:95: 	  this->_M_impl._M_start = __tmp;
+	vpunpcklqdq	%xmm1, %xmm1, %xmm0	# _113, tmp188
+# /usr/include/c++/10/bits/vector.tcc:97: 	  this->_M_impl._M_end_of_storage = this->_M_impl._M_start + __n;
+	movq	%rbx, 96(%rsp)	# tmp190, MEM[(struct thread * *)&threads + 16B]
+# /usr/include/c++/10/bits/vector.tcc:95: 	  this->_M_impl._M_start = __tmp;
+	vmovdqa	%xmm0, 80(%rsp)	# tmp188, MEM <vector(2) long unsigned int> [(struct thread * *)&threads]
+	jmp	.L70	#
+.L184:
+# /usr/include/c++/10/bits/vector.tcc:121: 	  _M_realloc_insert(end(), std::forward<_Args>(__args)...);
+	leaq	80(%rsp), %rdi	#, tmp207
+	movq	%r12, %rdx	# tmp263,
+.LEHB10:
+	call	_ZNSt6vectorISt6threadSaIS0_EE17_M_realloc_insertIJS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_	#
+.LEHE10:
+# /usr/include/c++/10/thread:156:       if (joinable())
+	cmpq	$0, 40(%rsp)	#, D.93815._M_id._M_thread
+	je	.L81	#,
+	jmp	.L89	#
+	.p2align 4,,10
+	.p2align 3
+.L185:
+# /usr/include/c++/10/bits/vector.tcc:121: 	  _M_realloc_insert(end(), std::forward<_Args>(__args)...);
+	leaq	80(%rsp), %rdi	#, tmp237
+	movq	%r12, %rdx	# tmp265,
+.LEHB11:
+	call	_ZNSt6vectorISt6threadSaIS0_EE17_M_realloc_insertIJS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_	#
+.LEHE11:
+# /usr/include/c++/10/thread:156:       if (joinable())
+	cmpq	$0, 56(%rsp)	#, D.93912._M_id._M_thread
+	je	.L96	#,
+	jmp	.L89	#
+	.p2align 4,,10
+	.p2align 3
+.L186:
+# /usr/include/c++/10/bits/vector.tcc:121: 	  _M_realloc_insert(end(), std::forward<_Args>(__args)...);
+	leaq	80(%rsp), %rdi	#, tmp251
+	movq	%r12, %rdx	# tmp266,
+.LEHB12:
+	call	_ZNSt6vectorISt6threadSaIS0_EE17_M_realloc_insertIJS0_EEEvN9__gnu_cxx17__normal_iteratorIPS0_S2_EEDpOT_	#
+.LEHE12:
+# /usr/include/c++/10/thread:156:       if (joinable())
+	cmpq	$0, 64(%rsp)	#, D.93960._M_id._M_thread
+	je	.L178	#,
+	jmp	.L89	#
+.L123:
+# /usr/include/c++/10/bits/unique_ptr.h:360: 	if (__ptr != nullptr)
+	movq	%rax, %rbp	# tmp273, tmp201
+	jmp	.L102	#
+.L118:
+# /usr/include/c++/10/bits/stl_vector.h:680: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	movq	%rax, %rbp	# tmp284, tmp200
+	vzeroupper
+	jmp	.L80	#
+.L126:
+# /usr/include/c++/10/bits/unique_ptr.h:360: 	if (__ptr != nullptr)
+	movq	%rax, %rbp	# tmp279, tmp247
+	jmp	.L102	#
+.L124:
+	movq	%rax, %rbp	# tmp275, tmp217
+	jmp	.L102	#
+.L125:
+	movq	%rax, %rbp	# tmp277, tmp232
+	jmp	.L102	#
+.L120:
+# /usr/include/c++/10/thread:156:       if (joinable())
+	movq	%rax, %rbp	# tmp281, tmp256
+	jmp	.L110	#
+.L121:
+	movq	%rax, %rbp	# tmp282, tmp258
+	jmp	.L111	#
+.L122:
+	movq	%rax, %rbp	# tmp283, tmp260
+	jmp	.L112	#
+.L119:
+	movq	%rax, %rbp	# tmp280, tmp254
+	jmp	.L109	#
+	.globl	__gxx_personality_v0
+	.section	.gcc_except_table,"a",@progbits
+.LLSDA8520:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSE8520-.LLSDACSB8520
+.LLSDACSB8520:
+	.uleb128 .LEHB0-.LFB8520
+	.uleb128 .LEHE0-.LEHB0
+	.uleb128 .L118-.LFB8520
+	.uleb128 0
+	.uleb128 .LEHB1-.LFB8520
+	.uleb128 .LEHE1-.LEHB1
+	.uleb128 .L123-.LFB8520
+	.uleb128 0
+	.uleb128 .LEHB2-.LFB8520
+	.uleb128 .LEHE2-.LEHB2
+	.uleb128 .L118-.LFB8520
+	.uleb128 0
+	.uleb128 .LEHB3-.LFB8520
+	.uleb128 .LEHE3-.LEHB3
+	.uleb128 .L124-.LFB8520
+	.uleb128 0
+	.uleb128 .LEHB4-.LFB8520
+	.uleb128 .LEHE4-.LEHB4
+	.uleb128 .L120-.LFB8520
+	.uleb128 0
+	.uleb128 .LEHB5-.LFB8520
+	.uleb128 .LEHE5-.LEHB5
+	.uleb128 .L118-.LFB8520
+	.uleb128 0
+	.uleb128 .LEHB6-.LFB8520
+	.uleb128 .LEHE6-.LEHB6
+	.uleb128 .L125-.LFB8520
+	.uleb128 0
+	.uleb128 .LEHB7-.LFB8520
+	.uleb128 .LEHE7-.LEHB7
+	.uleb128 .L118-.LFB8520
+	.uleb128 0
+	.uleb128 .LEHB8-.LFB8520
+	.uleb128 .LEHE8-.LEHB8
+	.uleb128 .L126-.LFB8520
+	.uleb128 0
+	.uleb128 .LEHB9-.LFB8520
+	.uleb128 .LEHE9-.LEHB9
+	.uleb128 .L118-.LFB8520
+	.uleb128 0
+	.uleb128 .LEHB10-.LFB8520
+	.uleb128 .LEHE10-.LEHB10
+	.uleb128 .L119-.LFB8520
+	.uleb128 0
+	.uleb128 .LEHB11-.LFB8520
+	.uleb128 .LEHE11-.LEHB11
+	.uleb128 .L121-.LFB8520
+	.uleb128 0
+	.uleb128 .LEHB12-.LFB8520
+	.uleb128 .LEHE12-.LEHB12
+	.uleb128 .L122-.LFB8520
+	.uleb128 0
+.LLSDACSE8520:
+	.text
+	.cfi_endproc
+	.section	.text.unlikely
+	.cfi_startproc
+	.cfi_personality 0x9b,DW.ref.__gxx_personality_v0
+	.cfi_lsda 0x1b,.LLSDAC8520
+	.type	_Z12dither_multiv.cold, @function
+_Z12dither_multiv.cold:
+.LFSB8520:
+.L102:
+	.cfi_def_cfa_offset 176
+	.cfi_offset 3, -56
+	.cfi_offset 6, -48
+	.cfi_offset 12, -40
+	.cfi_offset 13, -32
+	.cfi_offset 14, -24
+	.cfi_offset 15, -16
+# /usr/include/c++/10/bits/unique_ptr.h:360: 	if (__ptr != nullptr)
+	movq	72(%rsp), %rdi	# MEM[(struct _State * &)_293], _149
+# /usr/include/c++/10/bits/unique_ptr.h:360: 	if (__ptr != nullptr)
+	testq	%rdi, %rdi	# _149
+	je	.L171	#,
+# /usr/include/c++/10/bits/unique_ptr.h:85: 	delete __ptr;
+	movq	(%rdi), %rax	#* _149, _149->_vptr._State
+	vzeroupper
+	call	*8(%rax)	#
+.L80:
+# /usr/include/c++/10/bits/stl_vector.h:680: 	std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+	movq	80(%rsp), %rdi	# threads.D.93649._M_impl.D.92960._M_start, _164
+	movq	88(%rsp), %rdx	# threads.D.93649._M_impl.D.92960._M_finish, _163
+	movq	%rdi, %rax	# _164, __first
+.L114:
+# /usr/include/c++/10/bits/stl_construct.h:151: 	  for (; __first != __last; ++__first)
+	cmpq	%rax, %rdx	# __first, _163
+	jne	.L187	#,
+# /usr/include/c++/10/bits/stl_vector.h:336: 		      _M_impl._M_end_of_storage - _M_impl._M_start);
+	movq	96(%rsp), %rsi	# MEM[(struct _Vector_base *)&threads]._M_impl.D.92960._M_end_of_storage, _169
+	subq	%rdi, %rsi	# _164, _169
+# /usr/include/c++/10/bits/stl_vector.h:353: 	if (__p)
+	testq	%rdi, %rdi	# _164
+	je	.L115	#,
+# /usr/include/c++/10/ext/new_allocator.h:133: 	::operator delete(__p
+	call	_ZdlPvm@PLT	#
+.L115:
+	movq	%rbp, %rdi	# tmp200,
+.LEHB13:
+	call	_Unwind_Resume@PLT	#
+.LEHE13:
+.L110:
+# /usr/include/c++/10/thread:156:       if (joinable())
+	cmpq	$0, 48(%rsp)	#, D.93864._M_id._M_thread
+	je	.L171	#,
+	vzeroupper
+	jmp	.L89	#
+.L111:
+	cmpq	$0, 56(%rsp)	#, D.93912._M_id._M_thread
+	jne	.L174	#,
+.L171:
+	vzeroupper
+	jmp	.L80	#
+.L187:
+# /usr/include/c++/10/thread:156:       if (joinable())
+	cmpq	$0, (%rax)	#, MEM[base: __first_165, offset: 0B]
+	jne	.L89	#,
+# /usr/include/c++/10/bits/stl_construct.h:151: 	  for (; __first != __last; ++__first)
+	addq	$8, %rax	#, __first
+	jmp	.L114	#
+.L174:
+	vzeroupper
+	jmp	.L89	#
+.L112:
+# /usr/include/c++/10/thread:156:       if (joinable())
+	cmpq	$0, 64(%rsp)	#, D.93960._M_id._M_thread
+	je	.L171	#,
+	vzeroupper
+	jmp	.L89	#
+.L109:
+	cmpq	$0, 40(%rsp)	#, D.93815._M_id._M_thread
+	je	.L171	#,
+	vzeroupper
+	jmp	.L89	#
+	.cfi_endproc
+.LFE8520:
+	.section	.gcc_except_table
+.LLSDAC8520:
+	.byte	0xff
+	.byte	0xff
+	.byte	0x1
+	.uleb128 .LLSDACSEC8520-.LLSDACSBC8520
+.LLSDACSBC8520:
+	.uleb128 .LEHB13-.LCOLDB4
+	.uleb128 .LEHE13-.LEHB13
+	.uleb128 0
+	.uleb128 0
+.LLSDACSEC8520:
+	.section	.text.unlikely
+	.text
+	.size	_Z12dither_multiv, .-_Z12dither_multiv
+	.section	.text.unlikely
+	.size	_Z12dither_multiv.cold, .-_Z12dither_multiv.cold
+.LCOLDE4:
+	.text
+.LHOTE4:
+	.section	.rodata.str1.1
+.LC5:
+	.string	"test2.png"
+.LC7:
+	.string	"Preview"
+.LC8:
+	.string	"Finished in %.5fms"
+	.section	.text.startup,"ax",@progbits
+	.p2align 4
+	.globl	main
+	.type	main, @function
+main:
+.LFB8535:
+	.cfi_startproc
+	pushq	%rbp	#
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+# dither_bench.cpp:173:   auto img = RL::LoadImage("test2.png");
+	leaq	.LC5(%rip), %rsi	#,
+# dither_bench.cpp:171: int main(int argc, char **argv) {
+	pushq	%rbx	#
+	.cfi_def_cfa_offset 24
+	.cfi_offset 3, -24
+	subq	$88, %rsp	#,
+	.cfi_def_cfa_offset 112
+# dither_bench.cpp:173:   auto img = RL::LoadImage("test2.png");
+	leaq	48(%rsp), %rbp	#, tmp104
+	movq	%rbp, %rdi	# tmp104,
+	call	LoadImage@PLT	#
+# dither_bench.cpp:175:   RL::ImageFormat(&img, RL::PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
+	movl	$7, %esi	#,
+	movq	%rbp, %rdi	# tmp104,
+	call	ImageFormat@PLT	#
+# dither_bench.cpp:177:   width = img.width;
+	movslq	56(%rsp), %rax	# img.width, img.width
+	movq	%rax, _ZL5width(%rip)	# img.width, width
+# dither_bench.cpp:178:   height = img.height;
+	movslq	60(%rsp), %rax	# img.height, img.height
+	movq	%rax, _ZL6height(%rip)	# img.height, height
+# dither_bench.cpp:179:   pixels = static_cast<pixelv *>(img.data);
+	movq	48(%rsp), %rax	# img.data, img.data
+	movq	%rax, _ZL6pixels(%rip)	# img.data, pixels
+# dither_bench.cpp:181:   auto start = std::chrono::high_resolution_clock::now();
+	call	_ZNSt6chrono3_V212system_clock3nowEv@PLT	#
+	movq	%rax, %rbx	# tmp121, start
+# dither_bench.cpp:182: dither_multi();
+	call	_Z12dither_multiv	#
+# dither_bench.cpp:183:   auto end = std::chrono::high_resolution_clock::now();
+	call	_ZNSt6chrono3_V212system_clock3nowEv@PLT	#
+# /usr/include/c++/10/chrono:184: 	      static_cast<_CR>(__d.count()) / static_cast<_CR>(_CF::den)));
+	vxorps	%xmm0, %xmm0, %xmm0	# tmp125
+# dither_bench.cpp:187:   RL::InitWindow(img.width, img.height, "Preview");
+	movl	60(%rsp), %esi	# img.height,
+	leaq	.LC7(%rip), %rdx	#,
+# /usr/include/c++/10/chrono:564: 	return __cd(__cd(__lhs).count() - __cd(__rhs).count());
+	subq	%rbx, %rax	# start, tmp111
+# dither_bench.cpp:187:   RL::InitWindow(img.width, img.height, "Preview");
+	movl	56(%rsp), %edi	# img.width,
+# /usr/include/c++/10/chrono:184: 	      static_cast<_CR>(__d.count()) / static_cast<_CR>(_CF::den)));
+	vcvtsi2sdq	%rax, %xmm0, %xmm0	# tmp111, tmp125, tmp126
+# /usr/include/c++/10/chrono:184: 	      static_cast<_CR>(__d.count()) / static_cast<_CR>(_CF::den)));
+	vmulsd	.LC6(%rip), %xmm0, %xmm0	#, tmp112, _47
+	vmovsd	%xmm0, 8(%rsp)	# _47, %sfp
+# dither_bench.cpp:187:   RL::InitWindow(img.width, img.height, "Preview");
+	call	InitWindow@PLT	#
+# dither_bench.cpp:188:   auto tex = RL::LoadTextureFromImage(img);
+	leaq	16(%rsp), %rdi	#, tmp116
+	subq	$8, %rsp	#,
+	.cfi_def_cfa_offset 120
+	pushq	72(%rsp)	#
+	.cfi_def_cfa_offset 128
+	pushq	72(%rsp)	#
+	.cfi_def_cfa_offset 136
+	pushq	72(%rsp)	# img
+	.cfi_def_cfa_offset 144
+	call	LoadTextureFromImage@PLT	#
+# dither_bench.cpp:189:   auto txt = RL::TextFormat("Finished in %.5fms", time.count());
+	vmovsd	40(%rsp), %xmm0	# %sfp, _47
+	addq	$32, %rsp	#,
+	.cfi_def_cfa_offset 112
+	movl	$1, %eax	#,
+	leaq	.LC8(%rip), %rdi	#,
+	call	TextFormat@PLT	#
+	movq	%rax, %rbx	# tmp123, _21
+	jmp	.L190	#
+	.p2align 4,,10
+	.p2align 3
+.L192:
+# dither_bench.cpp:192:     RL::BeginDrawing();
+	call	BeginDrawing@PLT	#
+# dither_bench.cpp:193:     RL::ClearBackground(RL::WHITE);
+	movl	$-1, %edi	#,
+	call	ClearBackground@PLT	#
+# dither_bench.cpp:194:     RL::DrawTexture(tex, 0, 0, RL::WHITE);
+	subq	$32, %rsp	#,
+	.cfi_def_cfa_offset 144
+	movl	$-1, %edx	#,
+	xorl	%esi, %esi	#
+	movl	64(%rsp), %eax	# tex, tex
+	xorl	%edi, %edi	#
+	vmovdqu	48(%rsp), %xmm1	# tex, tmp127
+	vmovdqu	%xmm1, (%rsp)	# tmp127,
+	movl	%eax, 16(%rsp)	# tex,
+	call	DrawTexture@PLT	#
+# dither_bench.cpp:195:     RL::DrawText(txt, 0, 0, 70, RL::RED);
+	addq	$32, %rsp	#,
+	.cfi_def_cfa_offset 112
+	movl	$70, %ecx	#,
+	xorl	%edx, %edx	#
+	movl	$-13162010, %r8d	#,
+	xorl	%esi, %esi	#
+	movq	%rbx, %rdi	# _21,
+	call	DrawText@PLT	#
+# dither_bench.cpp:196:     RL::EndDrawing();
+	call	EndDrawing@PLT	#
+.L190:
+# dither_bench.cpp:191:   while (!RL::WindowShouldClose()) {
+	call	WindowShouldClose@PLT	#
+# dither_bench.cpp:191:   while (!RL::WindowShouldClose()) {
+	testb	%al, %al	# tmp124
+	je	.L192	#,
+# dither_bench.cpp:199:   RL::UnloadImage(img);
+	subq	$8, %rsp	#,
+	.cfi_def_cfa_offset 120
+	pushq	72(%rsp)	#
+	.cfi_def_cfa_offset 128
+	pushq	72(%rsp)	#
+	.cfi_def_cfa_offset 136
+	pushq	72(%rsp)	# img
+	.cfi_def_cfa_offset 144
+	call	UnloadImage@PLT	#
+# dither_bench.cpp:202: }
+	addq	$120, %rsp	#,
+	.cfi_def_cfa_offset 24
+	xorl	%eax, %eax	#
+	popq	%rbx	#
+	.cfi_def_cfa_offset 16
+	popq	%rbp	#
+	.cfi_def_cfa_offset 8
+	ret	
+	.cfi_endproc
+.LFE8535:
+	.size	main, .-main
+	.p2align 4
+	.type	_GLOBAL__sub_I_outLk, @function
+_GLOBAL__sub_I_outLk:
+.LFB9495:
+	.cfi_startproc
+# /usr/include/c++/10/iostream:74:   static ios_base::Init __ioinit;
+	leaq	_ZStL8__ioinit(%rip), %rdi	#,
+# dither_bench.cpp:202: }
+	subq	$8, %rsp	#,
+	.cfi_def_cfa_offset 16
+# /usr/include/c++/10/iostream:74:   static ios_base::Init __ioinit;
+	call	_ZNSt8ios_base4InitC1Ev@PLT	#
+	movq	_ZNSt8ios_base4InitD1Ev@GOTPCREL(%rip), %rdi	#,
+# dither_bench.cpp:202: }
+	addq	$8, %rsp	#,
+	.cfi_def_cfa_offset 8
+# /usr/include/c++/10/iostream:74:   static ios_base::Init __ioinit;
+	leaq	__dso_handle(%rip), %rdx	#,
+	leaq	_ZStL8__ioinit(%rip), %rsi	#,
+	jmp	__cxa_atexit@PLT	#
+	.cfi_endproc
+.LFE9495:
+	.size	_GLOBAL__sub_I_outLk, .-_GLOBAL__sub_I_outLk
+	.section	.init_array,"aw"
+	.align 8
+	.quad	_GLOBAL__sub_I_outLk
+	.section	.data.rel.ro,"aw"
+	.align 8
+	.type	_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE, @object
+	.size	_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE, 24
+_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE:
+# <anonymous>:
+# <anonymous>:
+	.quad	_ZTVN10__cxxabiv120__si_class_type_infoE+16
+# <anonymous>:
+	.quad	_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE
+# <anonymous>:
+	.quad	_ZTINSt6thread6_StateE
+	.section	.rodata
+	.align 32
+	.type	_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE, @object
+	.size	_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE, 77
+_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE:
+	.string	"*NSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE"
+	.section	.data.rel.ro
+	.align 8
+	.type	_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE, @object
+	.size	_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE, 24
+_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE:
+# <anonymous>:
+# <anonymous>:
+	.quad	_ZTVN10__cxxabiv120__si_class_type_infoE+16
+# <anonymous>:
+	.quad	_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE
+# <anonymous>:
+	.quad	_ZTINSt6thread6_StateE
+	.section	.rodata
+	.align 32
+	.type	_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE, @object
+	.size	_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE, 78
+_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE:
+	.string	"*NSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE"
+	.section	.data.rel.ro
+	.align 8
+	.type	_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE, @object
+	.size	_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE, 24
+_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE:
+# <anonymous>:
+# <anonymous>:
+	.quad	_ZTVN10__cxxabiv120__si_class_type_infoE+16
+# <anonymous>:
+	.quad	_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE
+# <anonymous>:
+	.quad	_ZTINSt6thread6_StateE
+	.section	.rodata
+	.align 32
+	.type	_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE, @object
+	.size	_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE, 78
+_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE:
+	.string	"*NSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE"
+	.section	.data.rel.ro
+	.align 8
+	.type	_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE, @object
+	.size	_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE, 24
+_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE:
+# <anonymous>:
+# <anonymous>:
+	.quad	_ZTVN10__cxxabiv120__si_class_type_infoE+16
+# <anonymous>:
+	.quad	_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE
+# <anonymous>:
+	.quad	_ZTINSt6thread6_StateE
+	.section	.rodata
+	.align 32
+	.type	_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE, @object
+	.size	_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE, 78
+_ZTSNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE:
+	.string	"*NSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE"
+	.section	.data.rel.ro.local,"aw"
+	.align 8
+	.type	_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE, @object
+	.size	_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE, 40
+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE:
+	.quad	0
+	.quad	_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEEE
+	.quad	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEED1Ev
+	.quad	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEED0Ev
+	.quad	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE_EEEEE6_M_runEv
+	.align 8
+	.type	_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE, @object
+	.size	_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE, 40
+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE:
+	.quad	0
+	.quad	_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEEE
+	.quad	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEED1Ev
+	.quad	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEED0Ev
+	.quad	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE0_EEEEE6_M_runEv
+	.align 8
+	.type	_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE, @object
+	.size	_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE, 40
+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE:
+	.quad	0
+	.quad	_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEEE
+	.quad	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEED1Ev
+	.quad	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEED0Ev
+	.quad	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE1_EEEEE6_M_runEv
+	.align 8
+	.type	_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE, @object
+	.size	_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE, 40
+_ZTVNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE:
+	.quad	0
+	.quad	_ZTINSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEEE
+	.quad	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEED1Ev
+	.quad	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEED0Ev
+	.quad	_ZNSt6thread11_State_implINS_8_InvokerISt5tupleIJZ12dither_multivEUlvE2_EEEEE6_M_runEv
+	.globl	outLk
+	.bss
+	.align 32
+	.type	outLk, @object
+	.size	outLk, 40
+outLk:
+	.zero	40
+	.local	_ZL6pixels
+	.comm	_ZL6pixels,8,8
+	.local	_ZL6height
+	.comm	_ZL6height,8,8
+	.local	_ZL5width
+	.comm	_ZL5width,8,8
+	.local	_ZStL8__ioinit
+	.comm	_ZStL8__ioinit,1,1
+	.weakref	_ZL28__gthrw___pthread_key_createPjPFvPvE,__pthread_key_create
+	.weakref	_ZL28__gthrw_pthread_mutex_unlockP15pthread_mutex_t,pthread_mutex_unlock
+	.weakref	_ZL26__gthrw_pthread_mutex_lockP15pthread_mutex_t,pthread_mutex_lock
+	.section	.rodata.cst8,"aM",@progbits,8
+	.align 8
+.LC6:
+	.long	-1598689907
+	.long	1051772663
+	.hidden	DW.ref.__gxx_personality_v0
+	.weak	DW.ref.__gxx_personality_v0
+	.section	.data.rel.local.DW.ref.__gxx_personality_v0,"awG",@progbits,DW.ref.__gxx_personality_v0,comdat
+	.align 8
+	.type	DW.ref.__gxx_personality_v0, @object
+	.size	DW.ref.__gxx_personality_v0, 8
+DW.ref.__gxx_personality_v0:
+	.quad	__gxx_personality_v0
+	.hidden	__dso_handle
+	.ident	"GCC: (Debian 10.2.1-6) 10.2.1 20210110"
+	.section	.note.GNU-stack,"",@progbits
