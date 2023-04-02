@@ -25,7 +25,8 @@ void gameplay() {
   if (!stopUpdating)
     tex = RL::LoadTextureFromImage(img);
   RL::ClearBackground(RL::WHITE);
-  RL::DrawTexture(tex, 0, 0, RL::WHITE);
+  //RL::DrawTexture(tex, 0, 0, RL::WHITE);
+  RL::DrawTextureRec(tex, {static_cast<float>(img.width/2),0,600,400}, {0,0}, RL::WHITE);
   RL::DrawText(txt, 0, 0, 30, RL::RED);
   RL::EndDrawing();
   if (operationComplete && !stopUpdating) {
@@ -103,7 +104,7 @@ int main(int argc, char **argv) {
     operationComplete = true;
   }).detach();
 
-  RL::InitWindow(img.width, img.height, "Preview");
+  RL::InitWindow(600, 400, "Preview");
 
 #ifndef PLATFORM_WEB
   while (!RL::WindowShouldClose()) {
