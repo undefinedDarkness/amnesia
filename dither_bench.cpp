@@ -24,9 +24,9 @@ static pixelv *pixels;
     #include <emscripten/emscripten.h>
 #endif
 
-#define CC(x) { (x >> 24) & 0xff, (x >> 16) & 0xff, (x >> 8) & 0xff, x & 0xff }
+#define CC(x) (pixelv){ (x >> 24) & 0xff, (x >> 16) & 0xff, (x >> 8) & 0xff, x & 0xff }
 
-constexpr static calcv colors[] = {
+ static std::vector<pixelv> colors = {
 	CC(0xc65f5fff),
 	CC(0x859e82ff),
 	CC(0xd9b27cff),
@@ -46,24 +46,20 @@ constexpr static calcv colors[] = {
 	CC(0xbeae94ff),
 	CC(0xd1c6b4ff)
 };
-
-
-
+#include <cmath>
+#define sq(x) ((x)*(x))
 pixelv findNearest(pixelv &c) {
-    int maxDist = INT_MAX;
-    calcv cc;
-	const calcv init = __builtin_convertvector(c,calcv);
-    for (auto& color : colors) {
-        calcv c = init;
-		c -= color;
-        c *= c;
-        if (maxDist > c[0]+c[1]+c[2]) {
-            cc = color;
-			maxDist = c[0]+c[1]+c[2];
+	double dist = 1000;
+	pixelv min;
+	for (auto color : colors) {
+		double result = sqrt(sq(color[0] - c[0]) + sq(color[1] - c[1]) + sq(color[2] - c[2]));
+		if (result < dist) {
+			dist = result;
+			min = color;
 		}
-    }
-	cc[3] = init[3];
-    return __builtin_convertvector(cc, pixelv);
+	}
+	min[3] = c[3];
+	return min;
 }
 
 // {{{
@@ -73,7 +69,8 @@ void dither(size_t start_h, size_t height) {
   size_t i;
   for (i = start_h; i < start_h + height - 3; i++) {
     pixelv v = pixels[i * width + 0];
-    pixelv o = findNearest(v);
+    pixelv o = v > 127;
+	o[3] = v[3];
     spixelv err = v;
     err -= o;
     err >>= 3;
@@ -88,7 +85,8 @@ void dither(size_t start_h, size_t height) {
     size_t j;
     for (j = 1; j < width - 1; j++) {
       pixelv v = pixels[i * width + j];
-      pixelv o = findNearest(v);
+      pixelv o = v > 127;
+	  o[3] = v[3];
       spixelv err = v;
       err -= o;
       err >>= 3;
@@ -104,7 +102,8 @@ void dither(size_t start_h, size_t height) {
 
     j++;
     v = pixels[i * width + j];
-    o = findNearest(v);
+    o = v > 127;
+	o[3] = v[3];
     err = v;
     err -= o;
     err >>= 4;
@@ -115,7 +114,8 @@ void dither(size_t start_h, size_t height) {
     pixels[(i + 2) * width + j + 0] += 1 * err;
   }
   pixelv v = pixels[i * width + 0];
-  pixelv o = findNearest(v);
+  pixelv o = v>127;
+  o[3] = v[3];
   spixelv err = v;
   err -= o;
   err >>= 3;
@@ -130,7 +130,8 @@ void dither(size_t start_h, size_t height) {
   size_t j;
   for (j = 1; j < width - 1; j++) {
     pixelv v = pixels[i * width + j];
-    pixelv o = findNearest(v);
+      pixelv o = v>127;
+  o[3] = v[3];
     spixelv err = v;
     err -= o;
     err >>= 3;
@@ -146,7 +147,8 @@ void dither(size_t start_h, size_t height) {
 
   j++;
   v = pixels[i * width + j];
-  o = findNearest(v);
+  o = v > 127;
+  o[3] = v[3];
   err = v;
   err -= o;
   err >>= 4;
@@ -159,7 +161,8 @@ void dither(size_t start_h, size_t height) {
   i++;
 
   v = pixels[i * width + 0];
-  o = findNearest(v);
+  o = v > 127;
+  o[3] = v[3];
   err = v;
   err -= o;
   err >>= 3;
@@ -172,7 +175,8 @@ void dither(size_t start_h, size_t height) {
 
   for (j = 1; j < width - 1; j++) {
     pixelv v = pixels[i * width + j];
-    pixelv o = findNearest(v);
+    pixelv o = v > 127;
+	o[3] = v[3];
     spixelv err = v;
     err -= o;
     err >>= 3;
@@ -187,7 +191,8 @@ void dither(size_t start_h, size_t height) {
 
   j++;
   v = pixels[i * width + j];
-  o = findNearest(v);
+  o = v > 127;
+  o[3] = v[3];
   err = v;
   err -= o;
   err >>= 4;
@@ -207,17 +212,27 @@ void gameplay() {
     RL::BeginDrawing();
     RL::ClearBackground(RL::WHITE);
     RL::DrawTexture(tex, 0, 0, RL::WHITE);
-    RL::DrawText(txt, 0, 0, 70, RL::RED);
+    RL::DrawText(txt, 0, 0, 10, RL::RED);
     RL::EndDrawing();
 }
 
 int main(int argc, char **argv) {
 
-	std::cout << "\x1b[48;2;255;255;255m";
+
+	int n;
+	auto f = RL::LoadImage("palette.png");
+	auto cols = RL::LoadImagePalette(f, 100, &n);
+	colors.clear();
+	for (int i = 0; i < n; i++) {
+		auto col = cols[i];
+		colors.push_back((pixelv){col.r, col.g, col.b, col.a});
+	}
+
+	std::cout << "\x1b[48;2;255;255;255m\n";
 	for (auto& color : colors) {
 		std::cout << "\x1b[38;2;" << color[0] << ';' << color[1] << ';' << color[2] << "m◼   ";
 	}
-	std::cout << "\e[0m" << std::endl;
+	std::cout << "\n\e[0m" << std::endl;
 
   auto img = RL::LoadImage("g.png");
   RL::ImageFormat(&img, RL::PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
@@ -227,7 +242,12 @@ int main(int argc, char **argv) {
   pixels = static_cast<pixelv *>(img.data);
 
   auto start = std::chrono::high_resolution_clock::now();
+  
   dither(0, img.height);
+  for (int i = 0; i < width*height; i++) {
+	  pixels[i] = findNearest(pixels[i]);
+  }
+
   auto end = std::chrono::high_resolution_clock::now();
 
   std::chrono::duration<double, std::milli> time = end - start;
