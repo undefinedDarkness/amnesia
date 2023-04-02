@@ -4,8 +4,14 @@ project('dither-bench', 'cpp',
                      'cpp_std=c++14'])
 
 deps = [ dependency('threads')]
+srcs = [
+  'dither_bench.cpp',
+  'src/color.cpp',
+  'src/dither.cpp',
+  'src/luma.cpp'
+]
 
-exe = executable('dither_bench', 'dither_bench.cpp',
-  install : true, link_args: ['-lraylib', '-ldl' , '-lGL'], dependencies : deps)
+exe = executable('dither_bench', srcs,
+  install : true, link_args: ['-lraylib', '-ldl' , '-lGL'], dependencies : deps, cpp_args : [ '-march=native', '-mtune=native' ])
 
 test('basic', exe)
