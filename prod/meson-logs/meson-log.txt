@@ -1,0 +1,85 @@
+Build started at 2023-04-02T12:14:28.694682
+Main binary: /usr/bin/python3
+Build Options: -Dbuildtype=release
+Python system: Linux
+The Meson build system
+Version: 0.56.2
+Source dir: /home/portal/Projects/dither-bench
+Build dir: /home/portal/Projects/dither-bench/prod
+Build type: native build
+Project name: dither-bench
+Project version: 0.1
+None of 'CXX' are defined in the environment, not changing global flags.
+None of 'CXXFLAGS' are defined in the environment, not changing global flags.
+None of 'LDFLAGS' are defined in the environment, not changing global flags.
+None of 'CPPFLAGS' are defined in the environment, not changing global flags.
+Using 'CXX_LD' from environment with value: 'bfd'
+Sanity testing C++ compiler: c++
+Is cross compiler: False.
+Using 'CXX_LD' from environment with value: 'bfd'
+Sanity check compiler command line: c++ /home/portal/Projects/dither-bench/prod/meson-private/sanitycheckcpp.cc -o /home/portal/Projects/dither-bench/prod/meson-private/sanitycheckcpp.exe -pipe -D_FILE_OFFSET_BITS=64 -fuse-ld=bfd
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+Running test binary command: /home/portal/Projects/dither-bench/prod/meson-private/sanitycheckcpp.exe
+C++ compiler for the host machine: c++ (clang 11.0.1-2 "Debian clang version 11.0.1-2")
+C++ linker for the host machine: c++ ld.bfd 2.35.2
+None of 'AR' are defined in the environment, not changing global flags.
+None of 'CXX' are defined in the environment, not changing global flags.
+None of 'CXXFLAGS' are defined in the environment, not changing global flags.
+None of 'LDFLAGS' are defined in the environment, not changing global flags.
+None of 'CPPFLAGS' are defined in the environment, not changing global flags.
+Using 'CXX_LD' from environment with value: 'bfd'
+Sanity testing C++ compiler: c++
+Is cross compiler: False.
+Using 'CXX_LD' from environment with value: 'bfd'
+Sanity check compiler command line: c++ /home/portal/Projects/dither-bench/prod/meson-private/sanitycheckcpp.cc -o /home/portal/Projects/dither-bench/prod/meson-private/sanitycheckcpp.exe -pipe -D_FILE_OFFSET_BITS=64 -fuse-ld=bfd
+Sanity check compile stdout:
+
+-----
+Sanity check compile stderr:
+
+-----
+Running test binary command: /home/portal/Projects/dither-bench/prod/meson-private/sanitycheckcpp.exe
+C++ compiler for the build machine: c++ (clang 11.0.1-2 "Debian clang version 11.0.1-2")
+C++ linker for the build machine: c++ ld.bfd 2.35.2
+None of 'AR' are defined in the environment, not changing global flags.
+Build machine cpu family: x86_64
+Build machine cpu: x86_64
+Host machine cpu family: x86_64
+Host machine cpu: x86_64
+Target machine cpu family: x86_64
+Target machine cpu: x86_64
+Run-time dependency threads found: YES
+Adding test "basic"
+Build targets in project: 1
+
+Found ninja-1.10.1 at /usr/bin/ninja
+Running compile:
+Working directory:  /tmp/tmp8efabmj8
+Command line:  c++ /tmp/tmp8efabmj8/testfile.cpp -o /tmp/tmp8efabmj8/output.obj -pipe -D_FILE_OFFSET_BITS=64 -c -std=c++14 
+
+Code:
+ int i = static_cast<int>(0);
+Compiler stdout:
+ 
+Compiler stderr:
+ 
+Compiler accepts -std=c++14: YES
+Running compile:
+Working directory:  /home/portal/Projects/dither-bench/prod/meson-private/tmpo7dvan9m
+Command line:  c++ /home/portal/Projects/dither-bench/prod/meson-private/tmpo7dvan9m/testfile.cpp -o /home/portal/Projects/dither-bench/prod/meson-private/tmpo7dvan9m/output.obj -pipe -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive -Werror=unknown-warning-option -Werror=unused-command-line-argument -Werror=ignored-optimization-argument --print-search-dirs 
+
+Code:
+ 
+Compiler stdout:
+ programs: =/usr/bin:/usr/lib/llvm-11/bin:/usr/bin/../lib/gcc/x86_64-linux-gnu/10/../../../../x86_64-linux-gnu/bin
+libraries: =/usr/lib/llvm-11/lib/clang/11.0.1:/usr/bin/../lib/gcc/x86_64-linux-gnu/10:/usr/bin/../lib/gcc/x86_64-linux-gnu/10/../../../x86_64-linux-gnu:/usr/bin/../lib/gcc/x86_64-linux-gnu/10/../../../../lib64:/lib/x86_64-linux-gnu:/lib/../lib64:/usr/lib/x86_64-linux-gnu:/usr/lib/../lib64:/usr/lib/x86_64-linux-gnu/../../lib64:/usr/bin/../lib/gcc/x86_64-linux-gnu/10/../../..:/usr/lib/llvm-11/bin/../lib:/lib:/usr/lib
+
+Compiler stderr:
+ 
+None of 'STRIP' are defined in the environment, not changing global flags.
+None of 'STRIP' are defined in the environment, not changing global flags.

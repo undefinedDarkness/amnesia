@@ -1,8 +1,0 @@
-[
-  {
-    "directory": "/home/portal/Projects/dither-bench/builddir",
-    "command": "c++ -Idither_bench.p -I. -I.. -Xclang -fcolor-diagnostics -pipe -D_FILE_OFFSET_BITS=64 -Wall -Winvalid-pch -Wnon-virtual-dtor -Wextra -Wpedantic -std=c++14 -g -pthread -MD -MQ dither_bench.p/dither_bench.cpp.o -MF dither_bench.p/dither_bench.cpp.o.d -o dither_bench.p/dither_bench.cpp.o -c ../dither_bench.cpp",
-    "file": "../dither_bench.cpp",
-    "output": "dither_bench.p/dither_bench.cpp.o"
-  }
-]
