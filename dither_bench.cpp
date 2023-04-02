@@ -39,7 +39,6 @@ pixelv findNearest(pixelv &find) {
 	int distance = INT_MAX;
     calcv cc;
 	calcv init = __builtin_convertvector(find, calcv);
-#pragma GCC unroll 16
     for (auto& color : colors) {
 		calcv c = (init-color); 
 		c = -c < c ? c : -c; 
@@ -49,6 +48,7 @@ pixelv findNearest(pixelv &find) {
 			distance = res;
 		}
     }
+	cc[3]=0xff;
     return __builtin_convertvector(cc, pixelv);
 }
 
@@ -60,7 +60,6 @@ void dither(size_t start_h, size_t height) {
   for (i = start_h; i < start_h + height - 3; i++) {
     pixelv v = pixels[i * width + 0];
     pixelv o = v > 127;
-    o[3] = v[3];
     spixelv err = v;
     err -= o;
     err >>= 3;
@@ -76,7 +75,6 @@ void dither(size_t start_h, size_t height) {
     for (j = 1; j < width - 1; j++) {
       pixelv v = pixels[i * width + j];
       pixelv o = v > 127;
-      o[3] = v[3];
       spixelv err = v;
       err -= o;
       err >>= 3;
@@ -93,7 +91,6 @@ void dither(size_t start_h, size_t height) {
     j++;
     v = pixels[i * width + j];
     o = v > 127;
-    o[3] = v[3];
     err = v;
     err -= o;
     err >>= 4;
@@ -105,7 +102,6 @@ void dither(size_t start_h, size_t height) {
   }
   pixelv v = pixels[i * width + 0];
   pixelv o = v > 127;
-  o[3] = v[3];
   spixelv err = v;
   err -= o;
   err >>= 3;
@@ -121,7 +117,6 @@ void dither(size_t start_h, size_t height) {
   for (j = 1; j < width - 1; j++) {
     pixelv v = pixels[i * width + j];
     pixelv o = v > 127;
-    o[3] = v[3];
     spixelv err = v;
     err -= o;
     err >>= 3;
@@ -138,7 +133,6 @@ void dither(size_t start_h, size_t height) {
   j++;
   v = pixels[i * width + j];
   o = v > 127;
-  o[3] = v[3];
   err = v;
   err -= o;
   err >>= 4;
@@ -152,7 +146,6 @@ void dither(size_t start_h, size_t height) {
 
   v = pixels[i * width + 0];
   o = v > 127;
-  o[3] = v[3];
   err = v;
   err -= o;
   err >>= 3;
@@ -166,7 +159,6 @@ void dither(size_t start_h, size_t height) {
   for (j = 1; j < width - 1; j++) {
     pixelv v = pixels[i * width + j];
     pixelv o = v > 127;
-    o[3] = v[3];
     spixelv err = v;
     err -= o;
     err >>= 3;
@@ -195,18 +187,33 @@ void dither(size_t start_h, size_t height) {
 
 const char *txt;
 RL::Texture tex;
+RL::Image img;
+#include <atomic>
 
+std::atomic<bool> operationComplete { false };
+
+bool stopUpdating = false;
 void gameplay() {
   RL::BeginDrawing();
+  if (!stopUpdating)
+	  tex = RL::LoadTextureFromImage(img);
   RL::ClearBackground(RL::WHITE);
   RL::DrawTexture(tex, 0, 0, RL::WHITE);
-  RL::DrawText(txt, 0, 0, 10, RL::RED);
+  RL::DrawText(txt, 0, 0, 30, RL::RED);
   RL::EndDrawing();
+  if (operationComplete && !stopUpdating) {
+	  tex = RL::LoadTextureFromImage(img);
+	  stopUpdating = true;
+  }
 }
 
 void colorize() {
 	size_t size = width*height;
 	size_t chunk = size/4;
+	if (chunk < 1000) {
+		for (int i = 0; i < size; i++)
+			pixels[i] = findNearest(pixels[i]);
+	} else {
 	size_t rem   = size&3;
 	std::array<std::thread, 5> threads;
 	size_t start = 0;
@@ -228,10 +235,10 @@ void colorize() {
 	for (int i = 0; i < 4+(!!rem); i++) {
 		threads[i].join();
 	}
+	}
 }
 
 int main(int argc, char **argv) {
-
   int n;
   auto f = RL::LoadImage("palette.png");
   auto cols = RL::LoadImagePalette(f, 100, &n);
@@ -242,31 +249,31 @@ int main(int argc, char **argv) {
   }
   RL::UnloadImagePalette(cols);
   RL::UnloadImage(f);
-
-  auto img = RL::LoadImage("balls.png");
+ 
+  img = RL::LoadImage("test2.png");
   RL::ImageFormat(&img, RL::PIXELFORMAT_UNCOMPRESSED_R8G8B8A8);
 
   width = img.width;
   height = img.height;
   pixels = static_cast<pixelv *>(img.data);
 
+	std::thread([&](){
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
   auto start = std::chrono::high_resolution_clock::now();
 
   dither(0, img.height);
-
-  /* for (int i = 0; i < width * height; i++) {
-    pixels[i] = findNearest(pixels[i]);
-  } */
   colorize();
 
   auto end = std::chrono::high_resolution_clock::now();
 
   std::chrono::duration<double, std::milli> time = end - start;
-
-  RL::InitWindow(img.width, img.height, "Preview");
-  tex = RL::LoadTextureFromImage(img);
   txt = RL::TextFormat("Finished in %.5fms", time.count());
 	printf("%s\n",txt);
+	operationComplete = true;
+
+  }).detach();
+
+  RL::InitWindow(img.width, img.height, "Preview");
 
 #ifndef PLATFORM_WEB
   while (!RL::WindowShouldClose()) {
