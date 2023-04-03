@@ -94,6 +94,7 @@ int main(int argc, char **argv) {
 
     if (cmdl[{"-l", "--luma"}])
       genericPass(lumaInvert, pixels, img.width,  img.height);
+    
     if (cmdl[{"-d", "--dither"}])
       ditherPass(0, img.height, img.width, pixels);
     genericPass(findNearest, pixels, img.width, img.height);

@@ -11,6 +11,10 @@ srcs = [
   'src/luma.cpp'
 ]
 
+if get_option('buildtype') == 'release'
+  add_project_arguments('-DNDEBUG', language : 'cpp')
+endif
+
 exe = executable('dither_bench', srcs,
   install : true, link_args: ['-lraylib', '-ldl' , '-lGL'], dependencies : deps, cpp_args : [ '-march=native', '-mtune=native' ])
 
