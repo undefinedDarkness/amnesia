@@ -1,23 +1,26 @@
 #include "../types.h"
 #include <stdarg.h>
-#include "rl.h"
-// #include <bits/stdint-uintn.h>
-#include <algorithm>
-#include <climits>
+
 #include <emmintrin.h>
 #include <smmintrin.h>
+#include <string>
 #include <tmmintrin.h>
-#include <vector>
-#include <cstdio>
 #include <xmmintrin.h>
+
+#include <algorithm>
+#include <fstream>
+#include <vector>
+
+#include <climits>
 #include <cmath>
+#include <cstdio>
 
 typedef unsigned char bv __attribute((vector_size(8 * sizeof(short))));
 typedef short sv __attribute((vector_size(8 * sizeof(short))));
-typedef double dv __attribute((vector_size(4*sizeof(double))));
+typedef double dv __attribute((vector_size(4 * sizeof(double))));
 #define CC(x) x //(pixelv){(x>>24)&0xff, (x>>16)&0xff, (x>>8)&0xff, x&0xff}
 
-alignas(16) static unsigned int colors[64+16] = {
+alignas(16) static unsigned int colors[64 + 16] = {
     CC(0xc65f5f00), CC(0x859e8200), CC(0xd9b27c00), CC(0x72879700),
     CC(0x99839600), CC(0x829e9b00), CC(0xab938200), CC(0xd08b6500),
     CC(0x3d383700), CC(0x25222100), CC(0x26232200), CC(0x302c2b00),
@@ -34,19 +37,10 @@ static short minv(__m128i x, int &i) {
 // TODO: See if the compiler an do this faster
 const auto nullify = _mm_set1_epi16(SHRT_MAX);
 static __m128i findPixelDiff(__m128i &a, const __m128i &b) {
-  // I tried using mpsad, it can do some of the work but not entirely
-  // maybe you could still make it work with 2 shuffles.. I'm too lazy tough
-  /*bv c = a - b;
-  c = _mm_abs_epi8(c);
-  __m128i result = (sv){ static_cast<short>(c[0]+c[1]+c[2]),
-  static_cast<short>(c[4]+c[5]+c[6]), static_cast<short>(c[8]+c[9]+c[10]),
-  static_cast<short>(c[12]+c[13]+c[14]), SHRT_MAX, SHRT_MAX, SHRT_MAX, SHRT_MAX
-  }; return result;*/
-
-  const auto shuffle1 = _mm_setr_epi8(0, 1, 10, 11, -1, -1, -1, -1, -1, -1, -1, -1,
-                                -1, -1, -1, -1);
-  const auto shuffle2 = _mm_setr_epi8(-1, -1, -1, -1, 0, 1, 10, 11, -1, -1, -1, -1,
-                                -1, -1, -1, -1);
+  const auto shuffle1 = _mm_setr_epi8(0, 1, 10, 11, -1, -1, -1, -1, -1, -1, -1,
+                                      -1, -1, -1, -1, -1);
+  const auto shuffle2 = _mm_setr_epi8(-1, -1, -1, -1, 0, 1, 10, 11, -1, -1, -1,
+                                      -1, -1, -1, -1, -1);
   auto pt12 = _mm_mpsadbw_epu8(a, b, 0);
   auto pt34 =
       _mm_mpsadbw_epu8(_mm_shuffle_epi32(a, _MM_SHUFFLE(1, 0, 4, 3)), b, 0);
@@ -69,8 +63,10 @@ pixelv findNearest(pixelv &find) {
     __m128i e = _mm_stream_load_si128((__m128i *)&colors[s + 16]);
     __m128i f = _mm_stream_load_si128((__m128i *)&colors[s + 20]);
     __m128i g = _mm_stream_load_si128((__m128i *)&colors[s + 24]);
-    __m128i h = s > 32 ? nullify : _mm_stream_load_si128((__m128i *)&colors[s + 28]);
-    __m128i i = s > 32 ? nullify : _mm_stream_load_si128((__m128i *)&colors[s + 32]);
+    __m128i h =
+        s > 32 ? nullify : _mm_stream_load_si128((__m128i *)&colors[s + 28]);
+    __m128i i =
+        s > 32 ? nullify : _mm_stream_load_si128((__m128i *)&colors[s + 32]);
 
     // get difference
     a = findPixelDiff(a, sub);
@@ -110,20 +106,22 @@ pixelv findNearest(pixelv &find) {
 }
 
 void loadPalette() {
-  int n;
-  auto f = RL::LoadImage("palette.png");
-  auto cols = RL::LoadImagePalette(f, 64, &n);
-  for (int i = 0; i < std::min(64, n); i++) {
-    auto col = cols[i];
-    colors[i] = col.r << 24 | col.g << 16 | col.b << 8 | 0x00; //{col.r, col.g, col.b, col.a};
+  std::string line;
+  std::ifstream paletteFile("palette.hex");
+  int j = 0;
+  while (std::getline(paletteFile, line)) {
+    size_t complete;
+    unsigned int hex = std::stoul(line, &complete, 16);
+    colors[j++] = hex;
   }
-  nColors = n;
-  printf("Loaded colour palette of %d colors\n", n);
-  RL::UnloadImagePalette(cols);
-  RL::UnloadImage(f);
+  nColors = j;
+  printf("Loaded %d colours from palette.\n", nColors);
 
   for (int i = 0; i < nColors; i++) {
-    printf("\x1b[38;2;%d;%d;%dm####\e[0m\t", colors[i]>>24 & 0xff, colors[i]>>16 & 0xff, colors[i]>>8 & 0xff); 
+    printf("\x1b[38;2;%d;%d;%dm⏺⏺⏺\e[0m\t", colors[i] >> 24 & 0xff,
+           colors[i] >> 16 & 0xff, colors[i] >> 8 & 0xff);
+    if (i%8==0)
+      printf("\n");
   }
   printf("\n");
 }

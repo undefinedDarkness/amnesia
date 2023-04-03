@@ -8,7 +8,8 @@ srcs = [
   'dither_bench.cpp',
   'src/color.cpp',
   'src/dither.cpp',
-  'src/luma.cpp'
+  'src/luma.cpp',
+  'libs/lodepng.cpp'
 ]
 
 if get_option('buildtype') == 'release'
@@ -16,6 +17,6 @@ if get_option('buildtype') == 'release'
 endif
 
 exe = executable('dither_bench', srcs,
-  install : true, link_args: ['-lraylib', '-ldl' , '-lGL'], dependencies : deps, cpp_args : [ '-march=native', '-mtune=native' ])
+  install : true, dependencies : deps, cpp_args : [ '-march=native', '-mtune=native' ])
 
 test('basic', exe)
