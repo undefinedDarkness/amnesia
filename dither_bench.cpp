@@ -25,8 +25,8 @@ void gameplay() {
   if (!stopUpdating)
     tex = RL::LoadTextureFromImage(img);
   RL::ClearBackground(RL::WHITE);
-  //RL::DrawTexture(tex, 0, 0, RL::WHITE);
-  RL::DrawTextureRec(tex, {static_cast<float>(img.width/2),0,600,400}, {0,0}, RL::WHITE);
+  RL::DrawTexture(tex, 0, 0, RL::WHITE);
+  //RL::DrawTextureRec(tex, {static_cast<float>(img.width/2),0,600,400}, {0,0}, RL::WHITE);
   RL::DrawText(txt, 0, 0, 30, RL::RED);
   RL::EndDrawing();
   if (operationComplete && !stopUpdating) {
@@ -37,6 +37,7 @@ void gameplay() {
 
 void genericPass(std::function<pixelv (pixelv&)> fn, pixelv *pixels, long width, long height) {
   size_t size = width * height;
+  #ifdef NDEBUG
   size_t chunk = size / 4;
   if (chunk < 1000) {
     for (int i = 0; i < size; i++)
@@ -64,6 +65,11 @@ void genericPass(std::function<pixelv (pixelv&)> fn, pixelv *pixels, long width,
       threads[i].join();
     }
   }
+  #else
+  for (int i = 0; i < size; i++) {
+    pixels[i] = fn(pixels[i]);
+  }
+  #endif
 }
 
 int main(int argc, char **argv) {
@@ -104,7 +110,7 @@ int main(int argc, char **argv) {
     operationComplete = true;
   }).detach();
 
-  RL::InitWindow(600, 400, "Preview");
+  RL::InitWindow(img.width, img.height, "Preview");
 
 #ifndef PLATFORM_WEB
   while (!RL::WindowShouldClose()) {

@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/builddir/dither_bench",
-            "args": [],
+            "args": ["g.png", "-d"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
