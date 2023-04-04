@@ -1,4 +1,5 @@
 #include "../types.h"
+#include <ios>
 #include <stdarg.h>
 
 #include <emmintrin.h>
@@ -35,7 +36,7 @@ static short minv(__m128i x, int &i) {
 }
 
 // TODO: See if the compiler an do this faster
-const auto nullify = _mm_set1_epi16(SHRT_MAX);
+const auto nullify = _mm_set1_epi16(0xffff);
 static __m128i findPixelDiff(__m128i &a, const __m128i &b) {
   const auto shuffle1 = _mm_setr_epi8(0, 1, 10, 11, -1, -1, -1, -1, -1, -1, -1,
                                       -1, -1, -1, -1, -1);
@@ -46,8 +47,8 @@ static __m128i findPixelDiff(__m128i &a, const __m128i &b) {
       _mm_mpsadbw_epu8(_mm_shuffle_epi32(a, _MM_SHUFFLE(1, 0, 4, 3)), b, 0);
   pt12 = _mm_shuffle_epi8(pt12, shuffle1);
   pt34 = _mm_shuffle_epi8(pt34, shuffle2);
-  auto result = _mm_blend_epi16(_mm_max_epi16(pt12, pt34), nullify, 0b11110000);
-  return result;
+  auto result1 = _mm_blend_epi16(_mm_max_epi16(pt12, pt34), nullify, 0b11110000);
+  return result1;
 }
 
 pixelv findNearest(pixelv &find) {
@@ -94,7 +95,7 @@ pixelv findNearest(pixelv &find) {
     int da, db, ai, bi;
     da = iter(0, ai);
     db = iter(0, bi);
-    minvindex = da > db ? ai : bi;
+    minvindex = da < db ? ai : bi;
   } else {
     iter(0, minvindex);
   }
@@ -108,20 +109,17 @@ pixelv findNearest(pixelv &find) {
 void loadPalette() {
   std::string line;
   std::ifstream paletteFile("palette.hex");
-  int j = 0;
-  while (std::getline(paletteFile, line)) {
-    size_t complete;
-    unsigned int hex = std::stoul(line, &complete, 16);
-    colors[j++] = hex;
+  unsigned int color;
+  nColors = 0;
+  while (paletteFile >> std::hex >> color) {
+    // check if has an alpha channel
+    if (((color >> 24) & 0xff) == 0)
+      color = color << 8 | 0;
+    printf("\x1b[38;2;%d;%d;%dm██████\x1b[0m", (color >> 24) & 0xff,
+           (color >> 16) & 0xff, (color >> 8) & 0xff);
+  	colors[nColors++] = color;
   }
-  nColors = j;
-  printf("Loaded %d colours from palette.\n", nColors);
-
-  for (int i = 0; i < nColors; i++) {
-    printf("\x1b[38;2;%d;%d;%dm⏺⏺⏺\e[0m\t", colors[i] >> 24 & 0xff,
-           colors[i] >> 16 & 0xff, colors[i] >> 8 & 0xff);
-    if (i%8==0)
-      printf("\n");
-  }
-  printf("\n");
+  printf("\n\x1b[0m");
+  printf("Loaded %lu colours from palette file: palette.hex\n", nColors);
+  paletteFile.close();
 }

@@ -9,7 +9,6 @@ srcs = [
   'src/color.cpp',
   'src/dither.cpp',
   'src/luma.cpp',
-  'libs/lodepng.cpp'
 ]
 
 if get_option('buildtype') == 'release'

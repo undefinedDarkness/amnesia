@@ -8,7 +8,11 @@
 
 #include "types.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "libs/argh.h"
+#include "libs/stb_image.h"
+#include "libs/stb_image_write.h"
 
 void genericPass(std::function<pixelv(pixelv &)> fn, pixelv *pixels, long width,
                  long height) {
@@ -48,21 +52,18 @@ void genericPass(std::function<pixelv(pixelv &)> fn, pixelv *pixels, long width,
 #endif
 }
 
-#include "libs/lodepng.h"
-
 int main(int argc, char **argv) {
   argh::parser cmdl(argv);
 
   if (cmdl[1].empty()) {
     std::cout << "Nothing to do" << std::endl;
-    return 0; // no file given
+    return 0;
   }
 
-  unsigned char*pixelData;
-  unsigned int width, height;
-  lodepng_decode32_file(&pixelData, &width, &height,
-                        cmdl[1].c_str());
-  pixelv *pixels = (pixelv*)pixelData;
+  unsigned char *pixelData;
+  int width, height, channels;
+  pixelData = stbi_load(cmdl[1].c_str(), &width, &height, &channels, 4);
+  pixelv *pixels = (pixelv *)pixelData;
 
   if (cmdl[{"-p", "--palette"}])
     loadPalette();
@@ -74,7 +75,9 @@ int main(int argc, char **argv) {
 
   if (cmdl[{"-d", "--dither"}])
     ditherPass(0, height, width, pixels);
+
   genericPass(findNearest, pixels, width, height);
+  
   genericPass(
       [](auto &c) {
         c[3] = 0xff;
@@ -87,8 +90,10 @@ int main(int argc, char **argv) {
   std::chrono::duration<double, std::milli> time = end - start;
   printf("Finished in %.5fms\n", time.count());
 
-  lodepng_encode32_file("output.png", pixelData, width, height);
-  system("convert output.png sixel:");
+  stbi_write_png("output.png", width, height, 4, pixelData, width * 4);
+  
+  if (cmdl[{"--preview"}])
+    system("convert output.png sixel:");
 
   free(pixelData);
   return 0;
