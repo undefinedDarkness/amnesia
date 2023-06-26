@@ -1,3 +1,5 @@
 builddir
 prod
 dt
+zig-out
+zig-cache

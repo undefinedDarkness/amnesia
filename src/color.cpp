@@ -1,5 +1,6 @@
 #include "../types.h"
 #include <ios>
+#include <iostream>
 #include <stdarg.h>
 
 #include <emmintrin.h>
@@ -108,7 +109,13 @@ pixelv findNearest(pixelv &find) {
 
 void loadPalette() {
   std::string line;
+  
   std::ifstream paletteFile("palette.hex");
+  if (!paletteFile.good()) {
+    std::cerr << "Encountered error reading from palette.hex\n";
+    return;
+  }
+
   unsigned int color;
   nColors = 0;
   while (paletteFile >> std::hex >> color) {

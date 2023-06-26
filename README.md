@@ -1,2 +1,0 @@
-# Amnesia : A fast colorizer
-
