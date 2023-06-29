@@ -66,11 +66,9 @@ const bayer4x4 = mat4x4f(
 );//- half4x4;
 
 fn bayer(my: vec2u) -> vec4f {
-    if (grayscale(textureLoad(input,my.xy, 0)) >= bayer4x4[my.y % 4][my.x % 4]) {
-        return vec4f(1.0);
-    } else {
-        return vec4f(0, 0, 0, 1.0);
-    }
+    let b = bayer4x4[my.y % 4][my.x % 4];
+    let p = textureLoad(input, my.xy, 0);
+    return vec4f(step(b, p.x), step(b, p.y), step(b, p.z), 1.0);
 }
 
 @compute @workgroup_size(1, 1)
