@@ -19,8 +19,6 @@
 #include "libs/stb_image.h"
 #include "libs/stb_image_write.h"
 
-// void testImpl();
-
 void genericPass(std::function<pixelv(pixelv &)> fn, pixelv *pixels, long width,
                  long height) {
   size_t size = width * height;
@@ -63,11 +61,12 @@ void genericPass(std::function<pixelv(pixelv &)> fn, pixelv *pixels, long width,
 #endif
 }
 
-extern "C" void testImpl();
-extern "C" int32_t doGPUDither(uint32_t *, uint32_t, uint32_t, uint32_t);
+//extern "C" void testImpl();
+extern "C" int32_t doGPUWork(uint32_t *, uint32_t, uint32_t, uint32_t);
+extern "C" void* doGPUInit();
 
 int main(int argc, char **argv) {
-  testImpl();
+  //testImpl();
   #ifdef __WIN32__
   // Hack because windows sucks and won't interpret UTF8 output in the console correctly, same deal for the VSC Console
   SetConsoleOutputCP(CP_UTF8);
@@ -90,40 +89,15 @@ int main(int argc, char **argv) {
   pixelData = stbi_load(cmdl[1].c_str(), &width, &height, &channels, 4);
   pixelv *pixels = (pixelv *)pixelData;
 
-  //width = 512 + 32;
-  //height = 512;
+  // -- MAIN WORK: File is loaded --
+  void* gpuInst = doGPUInit();
+  if (gpuInst == nullptr) {
+    std::cerr << "GPU Compute unavailable returning to CPU operation\n";
+  } else {
+    std::cerr << "GPU Compute initialized sucessfully\n";
+  }
 
-  if (cmdl[{"-p", "--palette"}])
-    loadPalette();
-
-  auto start = std::chrono::high_resolution_clock::now();
-
-//  if (cmdl[{"-l", "--luma"}])
-//    genericPass(lumaInvert, pixels, width, height);
-
-  if (cmdl[{"-d", "--dither"}])
-    std::cout << "=> " << doGPUDither((uint32_t*)pixelData, width * height * 4, width, height) << "\n";
-    //ditherPass(0, height, width, pixels);
-
-//  genericPass(findNearest, pixels, width, height);
-  
-  genericPass(
-      [](auto &c) {
-        c[3] = 0xff;
-        return c;
-      },
-      pixels, width, height);
-
-  auto end = std::chrono::high_resolution_clock::now();
-
-  std::chrono::duration<double, std::milli> time = end - start;
-  printf("Finished in %.5fms\n", time.count());
-
-  stbi_write_png("output.png", width, height, 4, pixelData, width * 4); // TODO: FIX SLOW WRITING!!!!
-  
-  //if (cmdl[{"--preview"}])
-  //  system("convert output.png sixel:");
-
+  stbi_write_png("output.png", width, height, 4, pixelData, width * 4); // TODO: FIX SLOW WRITING!!!
   free(pixelData);
   return 0;
 }

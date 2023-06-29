@@ -3,11 +3,10 @@ const CShader = @import("cshader/main.zig");
 const gpu = @import("gpu");
 
 pub const GPUInterface = gpu.dawn.Interface;
-// const pixel = struct { r: u8, g: u8, b: u8, a: u8 };
 
-export fn testImpl() void {
-    std.debug.print("-- LINKED TO ZIG SUCESSFULLY --\n", .{}); // args: anytype)
-}
+//export fn testImpl() void {
+//    std.debug.print("-- LINKED TO ZIG SUCESSFULLY --\n", .{}); // args: anytype)
+//}
 
 fn roundUp(numToRound: i32, comptime multiple: i32) i32 { 
     comptime {
@@ -18,18 +17,40 @@ fn roundUp(numToRound: i32, comptime multiple: i32) i32 {
     return (numToRound + multiple - 1) & -multiple;
 }
 
-export fn doGPUDither(pixels_ptr: [*]u8, len: u32, width: u32, height: u32) i32 {
+// TODO: Cleanup code
+// TODO: Find a neater way of passing around options
+
+export fn doGPUInit() ?*CShader.state {
+    var mem = std.heap.c_allocator.create(CShader.state) catch unreachable;
+    if (CShader.init(std.heap.c_allocator, .{})) |v| {
+        mem.* = v;
+    } else |err| {
+        std.debug.print("GPU-CPU: {!}", .{err});
+        std.heap.c_allocator.free(mem);
+        return null;
+    }
+    return mem;
+}
+
+export fn doGPUDeinit(rep: ?*CShader.state) void {
+    if (rep) |v| {
+        CShader.deinit(v);
+    }
+}
+
+export fn doGPUWork(inst: *CShader.state, pixels_ptr: [*]u8, len: u32, width: u32, height: u32) i32 {
     const pixels = pixels_ptr[0..len];
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
     var alloc = gpa.allocator();
-    const a = std.time.milliTimestamp();
-    var inst = CShader.init(alloc, .{}) catch return;
-    const b = std.time.milliTimestamp();
-    std.debug.print("Initialized GPU in {d}ms\n", .{ b - a });//args: anytype)
-    defer inst.deinit();
+    _ = alloc;
+    //const a = std.time.milliTimestamp();
+    // var inst = CShader.init(alloc, .{}) catch return;
+    //const b = std.time.milliTimestamp();
+    // std.debug.print("Initialized GPU in {d}ms\n", .{ b - a });//args: anytype)
+    // defer CShader.deinit(inst);
 
-    const dev = inst.getDevice();
+    const dev = inst.device;
 
     const niceBytesPerRow = @intCast(u32, roundUp(@intCast(i32, 4*width), 256));
     std.debug.print("Using {d} bytes per row instead of {d}\n", .{ niceBytesPerRow, 4*width});//args: anytype)
@@ -88,7 +109,7 @@ export fn doGPUDither(pixels_ptr: [*]u8, len: u32, width: u32, height: u32) i32 
     const commands = encoder.finish(null);
     dev.getQueue().submit(&[_]*gpu.CommandBuffer{commands});
 
-    inst.waitForBufferMap(readBuffer, readBufferSize);
+    CShader.waitForBufferMap(inst, readBuffer, readBufferSize);
 
     if (readBuffer.getConstMappedRange(u8, 0, readBufferSize)) |v| {
         var copiedBytesA: u32 = 0;
@@ -100,8 +121,8 @@ export fn doGPUDither(pixels_ptr: [*]u8, len: u32, width: u32, height: u32) i32 
             copiedBytesA += rowSize;
             copiedBytesB += rowSize + rowEndOffset;
         }
-        const c = std.time.milliTimestamp();
-        std.debug.print("ALL GPU WORK FINISHED in {d}ms\n", .{ c-b });// args: anytype)
+        // const c = std.time.milliTimestamp();
+        //std.debug.print("ALL GPU WORK FINISHED in {d}ms\n", .{ c-b });// args: anytype)
     } else {
         std.debug.print("Got null value back from readBuffer\n", .{});// args: anytype)
         return -1;
