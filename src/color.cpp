@@ -17,116 +17,166 @@
 #include <cmath>
 #include <cstdio>
 
-typedef unsigned char bv __attribute((vector_size(8 * sizeof(short))));
-typedef short sv __attribute((vector_size(8 * sizeof(short))));
-typedef double dv __attribute((vector_size(4 * sizeof(double))));
-#define CC(x) x //(pixelv){(x>>24)&0xff, (x>>16)&0xff, (x>>8)&0xff, x&0xff}
+typedef uint16_t v8x16 __attribute((vector_size(8 * sizeof(uint16_t))));
+typedef uint8_t  v16x8 __attribute((vector_size(16 * sizeof(uint8_t))));
+#define CC(x) x 
 
-alignas(16) static unsigned int colors[64 + 16] = {
-    CC(0xc65f5f00), CC(0x859e8200), CC(0xd9b27c00), CC(0x72879700),
-    CC(0x99839600), CC(0x829e9b00), CC(0xab938200), CC(0xd08b6500),
-    CC(0x3d383700), CC(0x25222100), CC(0x26232200), CC(0x302c2b00),
-    CC(0x3d383700), CC(0x413c3a00), CC(0xc8bAA400), CC(0xcdc0ad00),
-    CC(0xbeae9400), CC(0xd1c6b400)};
+alignas(16) static uint32_t colors[64 + 16] = {
+    CC(0xc65f5fff), CC(0x859e82ff), CC(0xd9b27cff), CC(0x728797ff),
+    CC(0x998396ff), CC(0x829e9bff), CC(0xab9382ff), CC(0xd08b65ff),
+    CC(0x3d3837ff), CC(0x252221ff), CC(0x262322ff), CC(0x302c2bff),
+    CC(0x3d3837ff), CC(0x413c3aff), CC(0xc8bAA4ff), CC(0xcdc0adff),
+    CC(0xbeae94ff), CC(0xd1c6b4ff)};
 static size_t nColors = 18;
 
-static short minv(__m128i x, int &i) {
-  int result = _mm_cvtsi128_si32(_mm_minpos_epu16(x));
-  i = result >> 16;
-  return result;
-}
 
-// TODO: See if the compiler an do this faster
-const auto nullify = _mm_set1_epi16(0xffff);
-static __m128i findPixelDiff(__m128i &a, const __m128i &b) {
-  const auto shuffle1 = _mm_setr_epi8(0, 1, 10, 11, -1, -1, -1, -1, -1, -1, -1,
-                                      -1, -1, -1, -1, -1);
-  const auto shuffle2 = _mm_setr_epi8(-1, -1, -1, -1, 0, 1, 10, 11, -1, -1, -1,
-                                      -1, -1, -1, -1, -1);
-  auto pt12 = _mm_mpsadbw_epu8(a, b, 0);
-  auto pt34 =
-      _mm_mpsadbw_epu8(_mm_shuffle_epi32(a, _MM_SHUFFLE(1, 0, 4, 3)), b, 0);
-  pt12 = _mm_shuffle_epi8(pt12, shuffle1);
-  pt34 = _mm_shuffle_epi8(pt34, shuffle2);
-  auto result1 = _mm_blend_epi16(_mm_max_epi16(pt12, pt34), nullify, 0b11110000);
-  return result1;
-}
+int32_t doNNS(uint32_t *pxs, uint32_t pxw, uint32_t pxh, uint32_t *pal, uint32_t pals) {
+  const size_t canProcess = pxw*pxh - (pxw*pxh % 4);
+  const __m128i move_to_front_1 = _mm_setr_epi8( 0,  1,  8,  9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
+  const __m128i move_to_front_2 = _mm_setr_epi8(-1, -1, -1, -1,  0,  1,  8,  9, -1, -1, -1, -1, -1, -1, -1, -1);
+  const __m128i max_16b = _mm_set1_epi16(0xffff);
+  for (size_t px = 0; px < canProcess; px += 4) {
+    const __m128i A = _mm_loadu_si128((__m128i*)&pxs[px]);
+    uint16_t minDist = 0xffff;
+    uint32_t minColor = 0x663399ff;
 
-pixelv findNearest(pixelv &find) {
-  const __m128i sub =
-      _mm_set1_epi32(find[0] << 24 | find[1] << 16 | find[2] << 8 | 0x00);
+    // TODO: Figure out how to tell mpsadbw to use the other 3 pixels in `A`
+    for (int lx = 0; lx < pals; lx += 4) {
+      const __m128i B = _mm_stream_load_si128((__m128i*)&pal[lx]);
+      v8x16 R1 = _mm_mpsadbw_epu8(B, A, 0);
+      v8x16 R2 = _mm_mpsadbw_epu8(_mm_shuffle_epi32(B, 0b00001110), A, 0); // I tried using the bit flag but no luck
+      R1 = _mm_shuffle_epi8(R1, move_to_front_1);
+      R2 = _mm_shuffle_epi8(R2, move_to_front_2);
+      v8x16 R12 = _mm_max_epu16(R1, R2);
+      R12 = _mm_blend_epi16(R12, max_16b, 0xf0);
+      const v8x16 R3 = _mm_minpos_epu16(R12);
+      if (R3[0] < minDist) {
+        minDist = R3[0];
+        minColor = pal[lx + R3[1]];
+      }
+    }
 
-  auto iter = [=](const int s, int &minvindex) -> int {
-    // load 36 elements
-    __m128i a = _mm_stream_load_si128((__m128i *)&colors[s + 0]);
-    __m128i b = _mm_stream_load_si128((__m128i *)&colors[s + 4]);
-    __m128i c = _mm_stream_load_si128((__m128i *)&colors[s + 8]);
-    __m128i d = _mm_stream_load_si128((__m128i *)&colors[s + 12]);
-    __m128i e = _mm_stream_load_si128((__m128i *)&colors[s + 16]);
-    __m128i f = _mm_stream_load_si128((__m128i *)&colors[s + 20]);
-    __m128i g = _mm_stream_load_si128((__m128i *)&colors[s + 24]);
-    __m128i h =
-        s > 32 ? nullify : _mm_stream_load_si128((__m128i *)&colors[s + 28]);
-    __m128i i =
-        s > 32 ? nullify : _mm_stream_load_si128((__m128i *)&colors[s + 32]);
+    pxs[px] = minColor;
+      minDist = 0xffff;
+   minColor = 0x663399ff;
 
-    // get difference
-    a = findPixelDiff(a, sub);
-    b = findPixelDiff(b, sub);
-    c = findPixelDiff(c, sub);
-    d = findPixelDiff(d, sub);
-    e = findPixelDiff(e, sub);
-    f = findPixelDiff(f, sub);
-    h = findPixelDiff(h, sub);
-    i = findPixelDiff(i, sub);
+        for (int lx = 0; lx < pals; lx += 4) {
+      const __m128i B = _mm_stream_load_si128((__m128i*)&pal[lx]);
+      v8x16 R1 = _mm_mpsadbw_epu8(B, A, 1);
+      v8x16 R2 = _mm_mpsadbw_epu8(_mm_shuffle_epi32(B, 0b00001110), A, 1); // I tried using the bit flag but no luck
+      R1 = _mm_shuffle_epi8(R1, move_to_front_1);
+      R2 = _mm_shuffle_epi8(R2, move_to_front_2);
+      //printf("R1: %x %x %x %x\n", R1[0], R1[1], R1[2], R1[3]);
+      //printf("R2: %x %x %x %x\n", R2[0], R2[1], R2[2], R2[3]);
+      v8x16 R12 = _mm_max_epu16(R1, R2);
+      R12 = _mm_blend_epi16(R12, max_16b, 0xf0);
+      //printf("R12: %d %d %d %d %x\n", R12[0], R12[1], R12[2], R12[3], R12[4]);
+      const v8x16 R3 = _mm_minpos_epu16(R12);
+      //printf("Got max dist: %d %d\n", R3[0], R3[1]);
+      //printf("\n\n");
+      if (R3[0] < minDist) {
+        minDist = R3[0];
+        minColor = pal[lx + R3[1]];
+      }
+    }
 
-    int indexes[8];
-    __m128i cmp = _mm_setr_epi16(minv(a, indexes[0]), minv(b, indexes[1]),
-                                 minv(c, indexes[2]), minv(d, indexes[3]),
-                                 minv(e, indexes[4]), minv(f, indexes[5]),
-                                 minv(h, indexes[6]), minv(i, indexes[7]));
-    int ti;
-    auto mind = minv(cmp, ti);
-    minvindex = s + indexes[ti] + 4 * ti;
+    pxs[px + 1] = minColor;
+          minDist = 0xffff;
+   minColor = 0x663399ff;
 
-    return mind;
-  };
-  int minvindex;
-  if (nColors > 32) {
-    int da, db, ai, bi;
-    da = iter(0, ai);
-    db = iter(0, bi);
-    minvindex = da < db ? ai : bi;
-  } else {
-    iter(0, minvindex);
+          for (int lx = 0; lx < pals; lx += 4) {
+      const __m128i B = _mm_stream_load_si128((__m128i*)&pal[lx]);
+      v8x16 R1 = _mm_mpsadbw_epu8(B, A, 2);
+      v8x16 R2 = _mm_mpsadbw_epu8(_mm_shuffle_epi32(B, 0b00001110), A, 2); // I tried using the bit flag but no luck
+      R1 = _mm_shuffle_epi8(R1, move_to_front_1);
+      R2 = _mm_shuffle_epi8(R2, move_to_front_2);
+      //printf("R1: %x %x %x %x\n", R1[0], R1[1], R1[2], R1[3]);
+      //printf("R2: %x %x %x %x\n", R2[0], R2[1], R2[2], R2[3]);
+      v8x16 R12 = _mm_max_epu16(R1, R2);
+      R12 = _mm_blend_epi16(R12, max_16b, 0xf0);
+      //printf("R12: %d %d %d %d %x\n", R12[0], R12[1], R12[2], R12[3], R12[4]);
+      const v8x16 R3 = _mm_minpos_epu16(R12);
+      //printf("Got max dist: %d %d\n", R3[0], R3[1]);
+      //printf("\n\n");
+      if (R3[0] < minDist) {
+        minDist = R3[0];
+        minColor = pal[lx + R3[1]];
+      }
+    }
+
+    pxs[px + 2] = minColor;
+          minDist = 0xffff;
+   minColor = 0x663399ff;
+
+              for (int lx = 0; lx < pals; lx += 4) {
+      const __m128i B = _mm_stream_load_si128((__m128i*)&pal[lx]);
+      v8x16 R1 = _mm_mpsadbw_epu8(B, A, 3);
+      v8x16 R2 = _mm_mpsadbw_epu8(_mm_shuffle_epi32(B, 0b00001110), A, 3); // I tried using the bit flag but no luck
+      R1 = _mm_shuffle_epi8(R1, move_to_front_1);
+      R2 = _mm_shuffle_epi8(R2, move_to_front_2);
+      //printf("R1: %x %x %x %x\n", R1[0], R1[1], R1[2], R1[3]);
+      //printf("R2: %x %x %x %x\n", R2[0], R2[1], R2[2], R2[3]);
+      v8x16 R12 = _mm_max_epu16(R1, R2);
+      R12 = _mm_blend_epi16(R12, max_16b, 0xf0);
+      //printf("R12: %d %d %d %d %x\n", R12[0], R12[1], R12[2], R12[3], R12[4]);
+      const v8x16 R3 = _mm_minpos_epu16(R12);
+      //printf("Got max dist: %d %d\n", R3[0], R3[1]);
+      //printf("\n\n");
+      if (R3[0] < minDist) {
+        minDist = R3[0];
+        minColor = pal[lx + R3[1]];
+      }
+    }
+
+    pxs[px + 3] = minColor;
   }
-  auto x = colors[minvindex];
-  return pixelv{static_cast<unsigned char>((x >> 24) & 0xff),
-                static_cast<unsigned char>((x >> 16) & 0xff),
-                static_cast<unsigned char>((x >> 8) & 0xff),
-                static_cast<unsigned char>(x & 0xff)};
+
+  return 0;
 }
 
-void loadPalette() {
+int roundUp(int numToRound, int multiple) 
+{
+    // assert(multiple && ((multiple & (multiple - 1)) == 0));
+    return (numToRound + multiple - 1) & -multiple;
+}
+
+uint32_t *loadPalette(uint32_t *n) {
   std::string line;
-  
+  union {
+    struct {
+      uint8_t r;
+      uint8_t g;
+      uint8_t b;
+      uint8_t a;
+    } x;
+    uint32_t z;
+  } color;
+  color.z = 0;
   std::ifstream paletteFile("palette.hex");
+
   if (!paletteFile.good()) {
-    std::cerr << "Encountered error reading from palette.hex\n";
-    return;
+    std::cerr << "Encountered error reading from palette.hex reverting to default\n";
+    goto skip_fl;
   }
 
-  unsigned int color;
   nColors = 0;
-  while (paletteFile >> std::hex >> color) {
+  while (paletteFile >> std::hex >> color.z) {
     // check if has an alpha channel
-    if (((color >> 24) & 0xff) == 0)
-      color = color << 8 | 0;
-    printf("\x1b[38;2;%d;%d;%dm██████\x1b[0m", (color >> 24) & 0xff,
-           (color >> 16) & 0xff, (color >> 8) & 0xff);
-  	colors[nColors++] = color;
+    // if (color.x.a == 0)
+      color.x.a = 0xff;
+    std::swap(color.x.r, color.x.b); // Idk whats going on but this was necessary
+    // std::swap(color.x.g, color.x.b);
+    printf("\x1b[38;2;%d;%d;%dm██████\x1b[0m (%d, %d, %d) %x\n", color.x.r,
+            color.x.g, color.x.b, color.x.r, color.x.g, color.x.b, color.z);
+  	colors[nColors++] = color.z;
   }
+ d
   printf("\n\x1b[0m");
-  printf("Loaded %lu colours from palette file: palette.hex\n", nColors);
+  printf("Loaded %lu (padding to %d) colours from palette file: palette.hex\n", nColors, roundUp(nColors, 4));
   paletteFile.close();
+  
+  skip_fl:
+  nColors = roundUp(nColors, 4);
+  *n = nColors;
+  return colors;
 }

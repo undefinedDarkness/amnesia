@@ -1,14 +1,12 @@
-//@group(0) @binding(0) var<storage, read> input: array<u32>;
 @group(0) @binding(0) var input : texture_2d<f32>;
 @group(0) @binding(1) var result: texture_storage_2d<rgba8unorm, write>;
+@group(0) @binding(2) var palette: texture_2d<f32>;
 
 fn invert(in: vec4f) -> vec4f {
     return vec4f(1.0, 1.0, 1.0, 2.0) - in;
 }
 
 fn invertLumen(in: vec4f) -> vec4f {
-    // maybe there is a better way to do this? idk
-    // maybe i dont need the dots
     return vec4f(1.0) - vec4f(dot(in.xyz, vec3f(0, 0.5, 0.5)), dot(in.xyz, vec3f(0.5, 0, 0.5)), dot(in.xyz, vec3f(0.5, 0.5, 0)), 1.0);
 }
 
@@ -63,18 +61,34 @@ const bayer4x4 = mat4x4f(
     8.0/16.0, 4.0/16.0, 11.0/16.0, 7.0/16.0,
     2.0/16.0, 14.0/16.0, 1.0/16.0, 13.0/16.0,
     10.0/16.0, 6.0/16.0, 9.0/16.0, 5.0/16.0
-);//- half4x4;
+) - half4x4;
 
-fn bayer(my: vec2u) -> vec4f {
+fn bayer(p: vec4f, my: vec2u) -> vec4f {
     let b = bayer4x4[my.y % 4][my.x % 4];
-    let p = textureLoad(input, my.xy, 0);
-    return vec4f(step(b, p.x), step(b, p.y), step(b, p.z), 1.0);
+    return p + vec4f(b, b, b, 1);
+}
+
+fn nearestNeighbourColourSearch(p: vec4f, pos: vec2u) -> vec4f {
+    let ps = textureDimensions(palette).x;
+    var minDist = 999.0;
+    var minCol: vec4f = vec4f(0);
+    for (var i: u32 = 0; i < ps; i++) {
+        let col = textureLoad(palette, vec2u(i, 0), 0);
+        let dist = distance(col, p);
+        if (dist < minDist) {
+            minDist = dist;
+            minCol = col;
+        }
+    }
+    return minCol;
 }
 
 @compute @workgroup_size(1, 1)
 fn main(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workgroups) n_w: vec3u) {
-    //var p: vec4f = textureLoad(input, global_id.xy, 0);
-    var p = bayer(global_id.xy);
-    textureStore(result, global_id.xy, p);
+    // p = textureLoad(input, global_id.xy, 0);// vec2u(global_id.x % textureDimensions(palette).x, 0), 0);
 
+    var p = textureLoad(input, global_id.xy, 0);
+         // p = bayer(p, global_id.xy);
+         p = nearestNeighbourColourSearch(p, global_id.xy);
+    textureStore(result, global_id.xy, p);
 }

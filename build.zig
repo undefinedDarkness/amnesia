@@ -43,7 +43,7 @@ fn buildGPU(b: *std.Build, optimize: std.builtin.Mode, target: std.zig.CrossTarg
 fn buildMain(b: *std.Build, obj: *std.Build.Step.Compile, optimize: std.builtin.Mode, target: std.zig.CrossTarget) !void {
     const exe = b.addExecutable(.{
         .name = "dither-experiments",
-        .root_source_file = .{ .path = "dither.cpp" },
+        .root_source_file = .{ .path = "main.cpp" },
         .target = target,
         .optimize = optimize,
     });

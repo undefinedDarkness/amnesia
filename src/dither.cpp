@@ -1,7 +1,8 @@
 #include "../types.h"
 
 void ditherPass(long start_h, long height, long width, pixelv *pixels) {
-  // const long nPixels = width * height;
+  // Not sure why I unwrapped the loop but umm yeah
+  // Pretty sure this is atkinson dithering
   long i;
   for (i = start_h; i < start_h + height - 3; i++) {
     pixelv v = pixels[i * width + 0];

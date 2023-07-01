@@ -38,17 +38,21 @@ export fn doGPUDeinit(rep: ?*CShader.state) void {
     }
 }
 
-export fn doGPUWork(inst: *CShader.state, pixels_ptr: [*]u8, len: u32, width: u32, height: u32) i32 {
+const options = packed struct(u8) {
+    colorReplace: bool,
+    dither: bool,
+    lumaInvert: bool,
+    _padding: u5
+};
+
+export fn doGPUWork(inst_: ?*CShader.state, pixels_ptr: [*]u8, width: u32, height: u32, op: options, palette_ptr: [*]u32, palette_size: u32) i32 {
+    _ = op;
+    const inst = inst_ orelse return -1;
+    const len = width * height * 4;
     const pixels = pixels_ptr[0..len];
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    var alloc = gpa.allocator();
-    _ = alloc;
-    //const a = std.time.milliTimestamp();
-    // var inst = CShader.init(alloc, .{}) catch return;
-    //const b = std.time.milliTimestamp();
-    // std.debug.print("Initialized GPU in {d}ms\n", .{ b - a });//args: anytype)
-    // defer CShader.deinit(inst);
+    const paletteSizeInBytes = 4 * palette_size;
+    _ = paletteSizeInBytes;
+    const palette = palette_ptr[0..palette_size];
 
     const dev = inst.device;
 
@@ -60,23 +64,36 @@ export fn doGPUWork(inst: *CShader.state, pixels_ptr: [*]u8, len: u32, width: u3
         .bytes_per_row = width*4
     };
 
+    // for (palette) |c| {
+        // c.* = @bitReverse(c.*);
+    //     std.debug.print("{x} ", .{c});
+    // }
+    std.debug.print("\n", .{});//args: anytype)
 
-    const writeBuffer = dev.createTexture(&gpu.Texture.Descriptor.init(.{ .usage = .{ .texture_binding = true, .copy_dst = true, .copy_src = true }, .size = .{ .width = width, .height = height }, .format = .rgba8_unorm_srgb }));
+    const writeBuffer = dev.createTexture(&gpu.Texture.Descriptor.init(.{ .usage = .{ .texture_binding = true, .copy_dst = true, .copy_src = true }, .size = .{ .width = width, .height = height }, .format = .rgba8_unorm }));
     defer writeBuffer.release();
     dev.getQueue().writeTexture(&.{ .texture = writeBuffer }, &dataLayout, &.{ .width = width, .height = height }, pixels);
 
+    const paletteBuffer = dev.createTexture(&gpu.Texture.Descriptor.init(.{
+        .usage = .{ .texture_binding = true, .copy_dst = true },
+        .size = .{ .width = palette_size, .height = 1},
+        .format = .rgba8_unorm_srgb,
+    }));
+    dev.getQueue().writeTexture(&.{ .texture = paletteBuffer }, &.{ .offset = 0, .rows_per_image = 1, .bytes_per_row = palette_size*4 }, &.{ .width = palette_size, .height = 1 }, palette);
+    defer paletteBuffer.release();
+
     const btwBuffer = dev.createTexture(&gpu.Texture.Descriptor.init(.{ .usage = .{ .storage_binding = true, .copy_src = true, .copy_dst = true }, .size = .{ .width = width, .height = height }, .format = .rgba8_unorm }));
     defer btwBuffer.release();
-
 
     const readBuffer = dev.createBuffer(&.{ .mapped_at_creation = false, .usage = .{ .map_read = true, .copy_dst = true }, .size = niceBytesPerRow * height });
     defer readBuffer.release();
     const readBufferSize = niceBytesPerRow * height;
 
-    // const textureSampler = dev.createSampler(null);
-    // defer textureSampler.release();    
-
-    const computeModule = dev.createShaderModuleWGSL("main.wgsl", @embedFile("shader.wgsl"));
+    const shaderFile = std.fs.cwd().readFileAllocOptions(std.heap.c_allocator, "src/shader.wgsl", 10000, null, @alignOf(u8), 0) catch |err| {
+        std.debug.print("{!}\n", .{err});//args: anytype)
+        return -1;
+    };
+    const computeModule = dev.createShaderModuleWGSL("main.wgsl", shaderFile);
     defer computeModule.release();
 
     const computePipeline = dev.createComputePipeline(&.{ .compute = .{ .module = computeModule, .entry_point = "main" } });
@@ -87,7 +104,7 @@ export fn doGPUWork(inst: *CShader.state, pixels_ptr: [*]u8, len: u32, width: u3
         .entries = &.{ 
             gpu.BindGroup.Entry.textureView(0, writeBuffer.createView(null)),
             gpu.BindGroup.Entry.textureView(1, btwBuffer.createView(null)),
-            // gpu.BindGroup.Entry.sampler(2, textureSampler)
+            gpu.BindGroup.Entry.textureView(2, paletteBuffer.createView(null))
         },
     }));
     defer computeBindGroup.release();
@@ -116,10 +133,8 @@ export fn doGPUWork(inst: *CShader.state, pixels_ptr: [*]u8, len: u32, width: u3
         var copiedBytesB : u32= 0;
         const rowEndOffset = niceBytesPerRow - 4*width;
         const rowSize = 4*width;
-        while (copiedBytesA < len) {
+        while (copiedBytesA < len) : ({ copiedBytesA += rowSize; copiedBytesB += rowSize + rowEndOffset; }) {
             @memcpy(pixels[copiedBytesA .. copiedBytesA+rowSize], v[copiedBytesB .. copiedBytesB+rowSize]);
-            copiedBytesA += rowSize;
-            copiedBytesB += rowSize + rowEndOffset;
         }
         // const c = std.time.milliTimestamp();
         //std.debug.print("ALL GPU WORK FINISHED in {d}ms\n", .{ c-b });// args: anytype)

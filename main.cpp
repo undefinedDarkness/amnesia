@@ -62,8 +62,7 @@ void genericPass(std::function<pixelv(pixelv &)> fn, pixelv *pixels, long width,
 }
 
 //extern "C" void testImpl();
-extern "C" int32_t doGPUWork(uint32_t *, uint32_t, uint32_t, uint32_t);
-extern "C" void* doGPUInit();
+
 
 int main(int argc, char **argv) {
   //testImpl();
@@ -84,20 +83,29 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  unsigned char *pixelData;
+  uint8_t *pixelData;
   int width, height, channels;
   pixelData = stbi_load(cmdl[1].c_str(), &width, &height, &channels, 4);
-  pixelv *pixels = (pixelv *)pixelData;
+
+  uint32_t paletteSize;
+  uint32_t *palette = loadPalette(&paletteSize);
 
   // -- MAIN WORK: File is loaded --
-  void* gpuInst = doGPUInit();
+  void* gpuInst = cmdl["--no-gpu"] ? nullptr : doGPUInit();
   if (gpuInst == nullptr) {
-    std::cerr << "GPU Compute unavailable returning to CPU operation\n";
-  } else {
+    std::cerr << "GPU Compute unavailable (or --no-gpu given) returning to CPU operation\n";
+    // ditherPass(0, height, width, (pixelv*)pixelData);
+    doNNS((uint32_t*)pixelData, width, height, palette, paletteSize);
+    //for (size_t i = 0; i < width*height*4; i+=4)
+    //  pixelData[i + 3] = 0xff;
+ } else {
     std::cerr << "GPU Compute initialized sucessfully\n";
+    doGPUWork(gpuInst, (uint32_t*)pixelData, width, height, 0, palette, paletteSize);
   }
+  doGPUDeinit(gpuInst);
 
   stbi_write_png("output.png", width, height, 4, pixelData, width * 4); // TODO: FIX SLOW WRITING!!!
   free(pixelData);
+  std::cout << "FINISHED\n";
   return 0;
 }
