@@ -140,7 +140,7 @@ int roundUp(int numToRound, int multiple)
     return (numToRound + multiple - 1) & -multiple;
 }
 
-uint32_t *loadPalette(uint32_t *n) {
+uint32_t *loadPalette(uint32_t *n, const char *filePath) {
   std::string line;
   union {
     struct {
@@ -152,7 +152,7 @@ uint32_t *loadPalette(uint32_t *n) {
     uint32_t z;
   } color;
   color.z = 0;
-  std::ifstream paletteFile("palette.hex");
+  std::ifstream paletteFile(filePath);
 
   if (!paletteFile.good()) {
     std::cerr << "Encountered error reading from palette.hex reverting to default\n";
@@ -170,7 +170,7 @@ uint32_t *loadPalette(uint32_t *n) {
             color.x.g, color.x.b, color.x.r, color.x.g, color.x.b, color.z);
   	colors[nColors++] = color.z;
   }
- d
+ 
   printf("\n\x1b[0m");
   printf("Loaded %lu (padding to %d) colours from palette file: palette.hex\n", nColors, roundUp(nColors, 4));
   paletteFile.close();

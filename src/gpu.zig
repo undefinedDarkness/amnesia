@@ -45,8 +45,17 @@ const options = packed struct(u8) {
     _padding: u5
 };
 
+fn createPass(dev: *gpu.Device, enc: *gpu.CommandEncoder, mod: *gpu.ShaderModule, entry_pt: [*:0]const u8, entries: anytype) *gpu.ComputePassEncoder {
+    std.debug.print("Creating shader pass ({s})\n", .{entry_pt});
+    const pipeline = dev.createComputePipeline(&.{ .compute = .{ .module = mod, .entry_point = entry_pt } });
+    const bindGroup = dev.createBindGroup(&gpu.BindGroup.Descriptor.init(.{ .layout = pipeline.getBindGroupLayout(0), .entries = &entries }));
+    const pass = enc.beginComputePass(null);
+    pass.setPipeline(pipeline);
+    pass.setBindGroup(0, bindGroup, null);
+    return pass;
+}
+
 export fn doGPUWork(inst_: ?*CShader.state, pixels_ptr: [*]u8, width: u32, height: u32, op: options, palette_ptr: [*]u32, palette_size: u32) i32 {
-    _ = op;
     const inst = inst_ orelse return -1;
     const len = width * height * 4;
     const pixels = pixels_ptr[0..len];
@@ -70,7 +79,7 @@ export fn doGPUWork(inst_: ?*CShader.state, pixels_ptr: [*]u8, width: u32, heigh
     // }
     std.debug.print("\n", .{});//args: anytype)
 
-    const writeBuffer = dev.createTexture(&gpu.Texture.Descriptor.init(.{ .usage = .{ .texture_binding = true, .copy_dst = true, .copy_src = true }, .size = .{ .width = width, .height = height }, .format = .rgba8_unorm }));
+    const writeBuffer = dev.createTexture(&gpu.Texture.Descriptor.init(.{ .usage = .{ .texture_binding = true, .storage_binding = true, .copy_dst = true, .copy_src = true }, .size = .{ .width = width, .height = height }, .format = .rgba8_unorm }));
     defer writeBuffer.release();
     dev.getQueue().writeTexture(&.{ .texture = writeBuffer }, &dataLayout, &.{ .width = width, .height = height }, pixels);
 
@@ -82,7 +91,7 @@ export fn doGPUWork(inst_: ?*CShader.state, pixels_ptr: [*]u8, width: u32, heigh
     dev.getQueue().writeTexture(&.{ .texture = paletteBuffer }, &.{ .offset = 0, .rows_per_image = 1, .bytes_per_row = palette_size*4 }, &.{ .width = palette_size, .height = 1 }, palette);
     defer paletteBuffer.release();
 
-    const btwBuffer = dev.createTexture(&gpu.Texture.Descriptor.init(.{ .usage = .{ .storage_binding = true, .copy_src = true, .copy_dst = true }, .size = .{ .width = width, .height = height }, .format = .rgba8_unorm }));
+    const btwBuffer = dev.createTexture(&gpu.Texture.Descriptor.init(.{ .usage = .{ .texture_binding = true, .storage_binding = true, .copy_src = true, .copy_dst = true }, .size = .{ .width = width, .height = height }, .format = .rgba8_unorm }));
     defer btwBuffer.release();
 
     const readBuffer = dev.createBuffer(&.{ .mapped_at_creation = false, .usage = .{ .map_read = true, .copy_dst = true }, .size = niceBytesPerRow * height });
@@ -93,30 +102,28 @@ export fn doGPUWork(inst_: ?*CShader.state, pixels_ptr: [*]u8, width: u32, heigh
         std.debug.print("{!}\n", .{err});//args: anytype)
         return -1;
     };
-    const computeModule = dev.createShaderModuleWGSL("main.wgsl", shaderFile);
-    defer computeModule.release();
-
-    const computePipeline = dev.createComputePipeline(&.{ .compute = .{ .module = computeModule, .entry_point = "main" } });
-    defer computePipeline.release();
-
-    const computeBindGroup = dev.createBindGroup(&gpu.BindGroup.Descriptor.init(.{
-        .layout = computePipeline.getBindGroupLayout(0),
-        .entries = &.{ 
-            gpu.BindGroup.Entry.textureView(0, writeBuffer.createView(null)),
-            gpu.BindGroup.Entry.textureView(1, btwBuffer.createView(null)),
-            gpu.BindGroup.Entry.textureView(2, paletteBuffer.createView(null))
-        },
-    }));
-    defer computeBindGroup.release();
-
+    const shaderModule = dev.createShaderModuleWGSL(null, shaderFile);
+   
     const encoder = dev.createCommandEncoder(null);
-    const computePass = encoder.beginComputePass(null);
-    computePass.setPipeline(computePipeline);
-    computePass.setBindGroup(0, computeBindGroup, &.{});
-    computePass.dispatchWorkgroups(width, height, 1);
-    computePass.end();
-    // encoder.copyTextureToTexture(&.{.texture=writeBuffer}, &.{.texture=btwBuffer}, &.{.width=width,.height=height});// destination: *const ImageCopyTexture, copy_size: *const Extent3D)
-    encoder.copyTextureToBuffer(&.{.texture=btwBuffer}, &.{.buffer=readBuffer,.layout=.{
+    
+
+    if (op.dither) {
+        const pass = createPass(dev, encoder, shaderModule, "ditherPass", .{
+            gpu.BindGroup.Entry.textureView(0, writeBuffer.createView(null)),
+            gpu.BindGroup.Entry.textureView(1, btwBuffer.createView(null))
+        });
+        pass.dispatchWorkgroups(width, height, 1);
+        pass.end();
+    }
+
+    const pass = createPass(dev, encoder, shaderModule, "colourPass", .{
+        gpu.BindGroup.Entry.textureView(0, if (op.dither) btwBuffer.createView(null) else writeBuffer.createView(null)),
+        gpu.BindGroup.Entry.textureView(1, if (op.dither) writeBuffer.createView(null) else btwBuffer.createView(null))
+    });
+    pass.dispatchWorkgroups(width, height, 1);
+    pass.end();
+   
+    encoder.copyTextureToBuffer(&.{.texture= if (op.dither) writeBuffer else btwBuffer}, &.{.buffer=readBuffer,.layout=.{
         .offset = 0,
         .rows_per_image = height,
         .bytes_per_row = niceBytesPerRow //niceBytesPerRow

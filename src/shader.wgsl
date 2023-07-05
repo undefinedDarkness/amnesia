@@ -85,10 +85,14 @@ fn nearestNeighbourColourSearch(p: vec4f, pos: vec2u) -> vec4f {
 
 @compute @workgroup_size(1, 1)
 fn main(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workgroups) n_w: vec3u) {
-    // p = textureLoad(input, global_id.xy, 0);// vec2u(global_id.x % textureDimensions(palette).x, 0), 0);
-
     var p = textureLoad(input, global_id.xy, 0);
-         // p = bayer(p, global_id.xy);
-         p = nearestNeighbourColourSearch(p, global_id.xy);
+    p = nearestNeighbourColourSearch(p, global_id.xy);
+    textureStore(result, global_id.xy, p);
+}
+
+@compute @workgroup_size(1, 1)
+fn ditherPass(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workgroups) n_w: vec3u) {
+    var p = textureLoad(input, global_id.xy, 0);
+    p = bayer(p, global_id.xy);
     textureStore(result, global_id.xy, p);
 }

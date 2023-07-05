@@ -61,9 +61,6 @@ void genericPass(std::function<pixelv(pixelv &)> fn, pixelv *pixels, long width,
 #endif
 }
 
-//extern "C" void testImpl();
-
-
 int main(int argc, char **argv) {
   //testImpl();
   #ifdef __WIN32__
@@ -73,7 +70,21 @@ int main(int argc, char **argv) {
 
   argh::parser cmdl(argv);
 
-  if (cmdl[1].empty()) {
+  if (cmdl[{"-h", "--help"}]) {
+    std::cout << R"(
+AMNESIA - NES's little colourizer
+---------------------------------
+./[BINARY] [FILE-PATH]
+--help, -h => Help message
+--no-gpu => Disable GPU Compute & Go back to SIMD (MAY GET DIFFERENT RESULTS)
+--no-simd => Disable SIMD & Go back to simpler code
+--palette, -p => Designate palette (by default will try to read palette.hex & go back to builtin palette)
+--dmethod, -dm => Specify dithering method to use (Default is bayer dithering) {Possible values: bayer, atkinson, floydsteinberg, bluenoise}
+    )";
+    return 0;
+  }
+
+    if (cmdl[1].empty()) {
     std::cerr << "Nothing to do" << std::endl;
     return 0;
   }
@@ -87,20 +98,32 @@ int main(int argc, char **argv) {
   int width, height, channels;
   pixelData = stbi_load(cmdl[1].c_str(), &width, &height, &channels, 4);
 
+  std::string paletteFile;
+  cmdl({"-p", "--palette"}, "palette.hex") >> paletteFile;
+
   uint32_t paletteSize;
-  uint32_t *palette = loadPalette(&paletteSize);
+  uint32_t *palette = loadPalette(&paletteSize, paletteFile.c_str());
+
+  std::string ditherMethod;
+  cmdl({"-dm", "--dmethod"}, "bayer") >> ditherMethod;
 
   // -- MAIN WORK: File is loaded --
+  // TODO: Rework this logic a little
   void* gpuInst = cmdl["--no-gpu"] ? nullptr : doGPUInit();
   if (gpuInst == nullptr) {
     std::cerr << "GPU Compute unavailable (or --no-gpu given) returning to CPU operation\n";
-    // ditherPass(0, height, width, (pixelv*)pixelData);
+    if (ditherMethod == "atkinson") {
+      ditherPass(0, height, width, (pixelv*)pixelData);
+    }
     doNNS((uint32_t*)pixelData, width, height, palette, paletteSize);
-    //for (size_t i = 0; i < width*height*4; i+=4)
-    //  pixelData[i + 3] = 0xff;
  } else {
+  std::string ss;
     std::cerr << "GPU Compute initialized sucessfully\n";
-    doGPUWork(gpuInst, (uint32_t*)pixelData, width, height, 0, palette, paletteSize);
+    uint8_t options = 0;
+    if (ditherMethod == ("bayer")) {
+      options |= GPUOptions::BDITHER;
+    }
+    doGPUWork(gpuInst, (uint32_t*)pixelData, width, height, options, palette, paletteSize);
   }
   doGPUDeinit(gpuInst);
 
