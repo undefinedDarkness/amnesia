@@ -30,7 +30,7 @@ alignas(16) static uint32_t colors[64 + 16] = {
 static size_t nColors = 18;
 
 
-int32_t doNNS(uint32_t *pxs, uint32_t pxw, uint32_t pxh, uint32_t *pal, uint32_t pals) {
+int32_t doNNS(uint32_t *pxs, uint32_t pxw, uint32_t pxh, uint8_t options, uint32_t *pal, uint32_t pals) {
   const size_t canProcess = pxw*pxh - (pxw*pxh % 4);
   const __m128i move_to_front_1 = _mm_setr_epi8( 0,  1,  8,  9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1);
   const __m128i move_to_front_2 = _mm_setr_epi8(-1, -1, -1, -1,  0,  1,  8,  9, -1, -1, -1, -1, -1, -1, -1, -1);

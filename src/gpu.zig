@@ -55,6 +55,165 @@ fn createPass(dev: *gpu.Device, enc: *gpu.CommandEncoder, mod: *gpu.ShaderModule
     return pass;
 }
 
+export fn doGPUGlut(inst_: ?*CShader.state, palette_ptr: [*]u32, palette_size: u32, level: u32) ?[*]const u8 {
+    const inst = inst_ orelse return null;
+    const dev = inst.device;
+    
+    const cubeFace = level * level;
+
+    const palTex = dev.createTexture(&gpu.Texture.Descriptor.init(.{
+        .usage = .{
+            .texture_binding = true,
+            .copy_dst = true
+        },
+        .size = .{
+            .width = palette_size,
+            .height = 1
+        },
+        .format = .rgba8_unorm
+    }));
+    dev.getQueue().writeTexture(&.{ .texture = palTex }, &.{
+        .bytes_per_row = palette_size * 4,
+        .rows_per_image = 1
+    }, &.{
+        .width = palette_size, .height = 1
+    }, palette_ptr[0..palette_size]);
+
+    const lutTex = dev.createTexture(&gpu.Texture.Descriptor.init(.{
+        .usage = .{
+            .storage_binding = true,
+            .copy_src = true
+        },
+        .size = .{
+            .width = cubeFace,
+            .height = cubeFace,
+            .depth_or_array_layers = cubeFace
+        },
+        .dimension = .dimension_3d,
+        .format = .rgba8_unorm
+    }));
+    
+    const copyBufSize = cubeFace * cubeFace * cubeFace * 4;
+    const copyBuf = dev.createBuffer(&.{
+        .mapped_at_creation = false,
+        .usage = .{
+            .copy_dst = true,
+            .map_read = true
+        },
+        .size = copyBufSize
+    });
+
+    const shd_c = std.fs.cwd().readFileAllocOptions(std.heap.c_allocator, "src/shader.wgsl", 10000, null, @alignOf(u8), 0) catch |err| {
+        std.debug.print("Failed to read shader source code: {!}", .{err});
+        return null;
+    };
+    const shd = dev.createShaderModuleWGSL(null, shd_c);
+    const enc = dev.createCommandEncoder(null);
+    const pass = createPass(dev, enc, shd, "glut", .{
+        gpu.BindGroup.Entry.textureView(3, lutTex.createView(null)),
+        gpu.BindGroup.Entry.textureView(2, palTex.createView(null))
+    });
+    pass.dispatchWorkgroups(cubeFace, cubeFace, cubeFace);
+    pass.end();
+
+    enc.copyTextureToBuffer(&.{ .texture = lutTex }, &.{ .buffer = copyBuf, .layout = .{
+        .offset = 0,
+        .bytes_per_row = cubeFace * 4,
+        .rows_per_image = cubeFace
+    }  }, &.{ .width = cubeFace, .height = cubeFace, .depth_or_array_layers = cubeFace });
+    dev.getQueue().submit(&[_]*gpu.CommandBuffer{ enc.finish(null) });
+    CShader.waitForBufferMap(inst, copyBuf, copyBufSize);
+    return copyBuf.getConstMappedRange(u8, 0, copyBufSize).?.ptr;
+}
+
+export fn doGPUSlut(inst_: ?*CShader.state, pixels_ptr: [*]u8, px_w: u32, px_h: u32, lut_ptr: [*]u32, lut_imsize: u32) i32 {
+    const inst = inst_ orelse return -1;
+    const dev = inst.device;
+    
+    const lutLevel = @floatToInt(u32, std.math.cbrt(@intToFloat(f32, lut_imsize)));
+    const lutSize = lutLevel * lutLevel;
+    const lutTex = dev.createTexture(&gpu.Texture.Descriptor.init(.{
+        .format = .rgba8_unorm,
+        .dimension = .dimension_3d,
+        .usage = .{
+            .texture_binding = true,
+            .copy_dst = true
+        },
+        .size = .{
+            .width = lutSize,
+            .height = lutSize,
+            .depth_or_array_layers = lutSize
+        }
+    }));
+    dev.getQueue().writeTexture(&.{.texture = lutTex}, &.{.bytes_per_row = lutSize * 4, .rows_per_image = lutSize, .offset = 0}, &.{
+        .width = lutSize, .height = lutSize, .depth_or_array_layers = lutSize
+    }, lut_ptr[0 .. lutSize * lutSize * lutSize * 4]);
+
+    const lutSampler = dev.createSampler(&.{
+        .mag_filter = .linear,
+        .min_filter = .linear,
+        .mipmap_filter = .linear
+    });
+
+    const srcTexDesc = gpu.Texture.Descriptor.init(.{
+        .format = .rgba8_unorm,
+        .usage = .{
+            .texture_binding = true,
+            .storage_binding = true,
+            .copy_src = true
+        },
+        .size = .{
+            .width = px_w,
+            .height = px_h
+        }
+    });
+    const srcTex = dev.createTexture(&srcTexDesc);
+    dev.getQueue().writeTexture(&.{.texture=srcTex}, &.{.bytes_per_row = px_w * 4, .rows_per_image = px_h}, &.{.width = px_w,.height=px_h}, pixels_ptr[0..px_w*px_h*4]);
+    // const destTex = dev.createTexture(&srcTexDesc);
+    const niceBytesPerRow = @intCast(u32, roundUp(@intCast(i32, 4*px_w), 256));
+    const remainder = niceBytesPerRow - px_w*4;
+    const destBuf = dev.createBuffer(&.{
+        .mapped_at_creation = false,
+        .usage = .{
+            .copy_dst = true,
+            .map_read = true
+        },
+        .size = niceBytesPerRow * px_h
+    });
+
+    const shd_c = std.fs.cwd().readFileAllocOptions(std.heap.c_allocator, "src/shader.wgsl", 10000, null, @alignOf(u8), 0) catch |err| {
+        std.debug.print("Failed to read shader source code: {!}", .{err});
+        return -1;
+    };
+    const shd = dev.createShaderModuleWGSL(null, shd_c);
+    const enc = dev.createCommandEncoder(null);
+    const pass = createPass(dev, enc, shd, "slut", .{
+        gpu.BindGroup.Entry.textureView(0, srcTex.createView(null)),
+        gpu.BindGroup.Entry.textureView(1, srcTex.createView(null)),
+        gpu.BindGroup.Entry.sampler(5, lutSampler)
+        // gpu.BindGroup.Entry.sampler(4, )
+        //gpu.BindGroup.Entry.textureView(4, lutTex.createView(null))
+    });
+    pass.dispatchWorkgroups(px_w, px_h, 1);
+    pass.end();
+    
+    enc.copyTextureToBuffer(&.{.texture = srcTex }, &.{ .buffer = destBuf, .layout = .{
+        .bytes_per_row = niceBytesPerRow,
+        .rows_per_image = px_h
+    }  }, &.{
+        .width = px_w,
+        .height = px_h
+    });
+    CShader.waitForBufferMap(inst, destBuf, px_w*px_h*4);
+    const bufArr = destBuf.getConstMappedRange(u8, 0, px_w*px_h*4) orelse return -1;
+    var h_w: u32 = 0;
+    var start: u32 = 0;
+    while (h_w < px_h) : ({ h_w += 1; start += px_w*4; }) {
+        @memcpy(pixels_ptr[start .. start + px_w*4], bufArr[start+remainder .. start+remainder+px_w]);
+    }
+    return 0;
+}
+
 export fn doGPUWork(inst_: ?*CShader.state, pixels_ptr: [*]u8, width: u32, height: u32, op: options, palette_ptr: [*]u32, palette_size: u32) i32 {
     const inst = inst_ orelse return -1;
     const len = width * height * 4;
@@ -102,6 +261,7 @@ export fn doGPUWork(inst_: ?*CShader.state, pixels_ptr: [*]u8, width: u32, heigh
         std.debug.print("{!}\n", .{err});//args: anytype)
         return -1;
     };
+    defer std.heap.c_allocator.free(shaderFile);
     const shaderModule = dev.createShaderModuleWGSL(null, shaderFile);
    
     const encoder = dev.createCommandEncoder(null);

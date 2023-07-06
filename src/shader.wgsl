@@ -2,6 +2,11 @@
 @group(0) @binding(1) var result: texture_storage_2d<rgba8unorm, write>;
 @group(0) @binding(2) var palette: texture_2d<f32>;
 
+@group(0) @binding(3) var lutW: texture_storage_3d<rgba8unorm, write>;
+
+@group(0) @binding(4) var lut: texture_3d<f32>;
+@group(0) @binding(5) var lutSampler: sampler;
+
 fn invert(in: vec4f) -> vec4f {
     return vec4f(1.0, 1.0, 1.0, 2.0) - in;
 }
@@ -68,12 +73,12 @@ fn bayer(p: vec4f, my: vec2u) -> vec4f {
     return p + vec4f(b, b, b, 1);
 }
 
-fn nearestNeighbourColourSearch(p: vec4f, pos: vec2u) -> vec4f {
+fn nearestNeighbourColourSearch(p: vec3f) -> vec3f {
     let ps = textureDimensions(palette).x;
     var minDist = 999.0;
-    var minCol: vec4f = vec4f(0);
+    var minCol: vec3f = vec3f(0);
     for (var i: u32 = 0; i < ps; i++) {
-        let col = textureLoad(palette, vec2u(i, 0), 0);
+        let col = textureLoad(palette, vec2u(i, 0), 0).xyz;
         let dist = distance(col, p);
         if (dist < minDist) {
             minDist = dist;
@@ -86,7 +91,7 @@ fn nearestNeighbourColourSearch(p: vec4f, pos: vec2u) -> vec4f {
 @compute @workgroup_size(1, 1)
 fn main(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workgroups) n_w: vec3u) {
     var p = textureLoad(input, global_id.xy, 0);
-    p = nearestNeighbourColourSearch(p, global_id.xy);
+    p = vec4f(nearestNeighbourColourSearch(p.xyz), p.w);
     textureStore(result, global_id.xy, p);
 }
 
@@ -95,4 +100,17 @@ fn ditherPass(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_wor
     var p = textureLoad(input, global_id.xy, 0);
     p = bayer(p, global_id.xy);
     textureStore(result, global_id.xy, p);
+}
+
+@compute @workgroup_size(1, 1)
+fn glut(@builtin(global_invocation_id) pos : vec3u, @builtin(num_workgroups) size: vec3u) {
+    var cube_col = vec3f(pos.xyz) / vec3f(textureDimensions(lutW).xyz);
+    cube_col = nearestNeighbourColourSearch(cube_col);
+    textureStore(lutW, pos.xyz, vec4f(cube_col, 1.0));
+}
+
+@compute @workgroup_size(1, 1)
+fn slut(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workgroups) size: vec3u) {
+    var px = textureLoad(input, global_id.xy, 0);
+    textureStore(result, global_id.xy, textureSampleLevel(lut, lutSampler, px.xyz, 0));
 }
