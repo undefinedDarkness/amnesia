@@ -25,39 +25,42 @@ const gpu = gpu_sdk.Sdk(.{
 pub fn build(b: *std.Build) !void {
     const optimize = b.standardOptimizeOption(.{});
     const target = b.standardTargetOptions(.{});
-    var obj = try buildGPU(b, optimize, target);
-    try buildMain(b, obj, optimize, target);
+    // var obj = try buildGPU(b, optimize, target);
+    try buildMain(b, optimize, target);
 }
 
-fn buildGPU(b: *std.Build, optimize: std.builtin.Mode, target: std.zig.CrossTarget) !*std.build.Step.Compile {
-    const obj = b.addStaticLibrary(.{ .name = "gpu", .root_source_file = .{ .path = "src/gpu.zig" }, .optimize = optimize, .target = target });
-    b.installArtifact(obj);
-    obj.addModule("gpu", gpu.module(b));
-    obj.addModule("glfw", glfw.module(b));
-    try gpu.link(b, obj, .{}); //, step: *std.build.CompileStep, options: Options)
-    try glfw.link(b, obj, .{});
+// fn buildGPU(b: *std.Build, optimize: std.builtin.Mode, target: std.zig.CrossTarget) !*std.build.Step.Compile {
+//     const obj = b.addStaticLibrary(.{ .name = "gpu", .root_source_file = .{ .path = "src/gpu.zig" }, .optimize = optimize, .target = target });
+//     b.installArtifact(obj);
+//     obj.addModule("gpu", gpu.module(b));
+//     obj.addModule("glfw", glfw.module(b));
+//     try gpu.link(b, obj, .{}); //, step: *std.build.CompileStep, options: Options)
+//     try glfw.link(b, obj, .{});
 
-    return obj;
-}
+//     return obj;
+// }
 
-fn buildMain(b: *std.Build, obj: *std.Build.Step.Compile, optimize: std.builtin.Mode, target: std.zig.CrossTarget) !void {
+fn buildMain(b: *std.Build, optimize: std.builtin.Mode, target: std.zig.CrossTarget) !void {
     const exe = b.addExecutable(.{
         .name = "dither-experiments",
-        .root_source_file = .{ .path = "main.cpp" },
+        .root_source_file = .{ .path = "main.zig" },
         .target = target,
         .optimize = optimize,
     });
     exe.addIncludePath("libs");
-    exe.linkLibrary(obj);
+    // exe.linkLibrary(obj);
+    exe.addModule("gpu", gpu.module(b));
+    exe.addModule("glfw", glfw.module(b));
     try gpu.link(b, exe, .{});
     try glfw.link(b, exe, .{});
 
-    var tbuf: [100]u8 = undefined;
-    const threads = std.fmt.bufPrint(tbuf[0..], "-DNTHREAD={d}", .{std.Thread.getCpuCount() catch 1}) catch "";
+    //var tbuf: [100]u8 = undefined;
+    //const threads = std.fmt.bufPrint(tbuf[0..], "-DNTHREAD={d}", .{std.Thread.getCpuCount() catch 1}) catch "";
 
-    exe.want_lto = false; // breaks compilation
-    exe.addCSourceFiles(&[_][]const u8{ "./src/color.cpp", "./src/dither.cpp", "./src/luma.cpp" }, &[_][]const u8{ "-DNDEBUG", threads });
-    exe.linkLibCpp();
+    //exe.want_lto = false; // breaks compilation
+    exe.addCSourceFiles(&[_][]const u8{ "./src/simd.c" }, &[_][]const u8{ "-std=c11" });
+    
+    //exe.linkLibCpp();
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default

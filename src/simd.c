@@ -1,34 +1,170 @@
-#include "../types.h"
-#include <ios>
-#include <iostream>
-#include <stdarg.h>
-
+#include <stdint.h>
 #include <emmintrin.h>
 #include <smmintrin.h>
-#include <string>
 #include <tmmintrin.h>
 #include <xmmintrin.h>
 
-#include <algorithm>
-#include <fstream>
-#include <vector>
-
-#include <climits>
-#include <cmath>
-#include <cstdio>
+#include <limits.h>
+#include <math.h>
+#include <stdio.h>
 
 typedef uint16_t v8x16 __attribute((vector_size(8 * sizeof(uint16_t))));
 typedef uint8_t  v16x8 __attribute((vector_size(16 * sizeof(uint8_t))));
 #define CC(x) x 
 
-alignas(16) static uint32_t colors[64 + 16] = {
-    CC(0xc65f5fff), CC(0x859e82ff), CC(0xd9b27cff), CC(0x728797ff),
-    CC(0x998396ff), CC(0x829e9bff), CC(0xab9382ff), CC(0xd08b65ff),
-    CC(0x3d3837ff), CC(0x252221ff), CC(0x262322ff), CC(0x302c2bff),
-    CC(0x3d3837ff), CC(0x413c3aff), CC(0xc8bAA4ff), CC(0xcdc0adff),
-    CC(0xbeae94ff), CC(0xd1c6b4ff)};
-static size_t nColors = 18;
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image.h"
+#include "stb_image_write.h"
 
+typedef unsigned char pixelv __attribute__((vector_size(4)));
+typedef char spixelv __attribute((vector_size(4)));
+typedef int calcv __attribute((vector_size(4 * sizeof(int))));
+
+void atkinsonDither(uint32_t start_h, uint32_t height, uint32_t width, uint8_t *pixels_ptr) {
+  pixelv *pixels = pixels_ptr;
+  // Not sure why I unwrapped the loop but umm yeah
+  // Pretty sure this is atkinson dithering
+  long i;
+  for (i = start_h; i < start_h + height - 3; i++) {
+    pixelv v = pixels[i * width + 0];
+    pixelv o = v > 127;
+    spixelv err = v;
+    err -= o;
+    err >>= 3;
+
+    pixels[i * width + 0 + 0] = o;
+    pixels[i * width + 0 + 1] += 1 * err;
+    pixels[i * width + 0 + 2] += 1 * err;
+    pixels[(i + 1) * width + 0 + 1] += 1 * err;
+    pixels[(i + 1) * width + 0 + 0] += 1 * err;
+    pixels[(i + 2) * width + 0 + 0] += 1 * err;
+
+    long j;
+    for (j = 1; j < width - 1; j++) {
+      pixelv v = pixels[i * width + j];
+      pixelv o = v > 127;
+      spixelv err = v;
+      err -= o;
+      err >>= 3;
+
+      pixels[i * width + j + 0] = o;
+      pixels[i * width + j + 1] += 1 * err;
+      pixels[i * width + j + 2] += 1 * err;
+      pixels[(i + 1) * width + j - 1] += 1 * err;
+      pixels[(i + 1) * width + j + 0] += 1 * err;
+      pixels[(i + 1) * width + j + 1] += 1 * err;
+      pixels[(i + 2) * width + j + 0] += 1 * err;
+    }
+
+    j++;
+    v = pixels[i * width + j];
+    o = v > 127;
+    err = v;
+    err -= o;
+    err >>= 4;
+
+    pixels[i * width + j + 0] = o;
+    pixels[(i + 1) * width + j - 1] += 1 * err;
+    pixels[(i + 1) * width + j + 0] += 1 * err;
+    pixels[(i + 2) * width + j + 0] += 1 * err;
+  }
+  pixelv v = pixels[i * width + 0];
+  pixelv o = v > 127;
+  spixelv err = v;
+  err -= o;
+  err >>= 3;
+
+  pixels[i * width + 0 + 0] = o;
+  pixels[i * width + 0 + 1] += 1 * err;
+  pixels[i * width + 0 + 2] += 1 * err;
+  pixels[(i + 1) * width + 0 + 1] += 1 * err;
+  pixels[(i + 1) * width + 0 + 0] += 1 * err;
+  pixels[(i + 2) * width + 0 + 0] += 1 * err;
+
+  long j;
+  for (j = 1; j < width - 1; j++) {
+    pixelv v = pixels[i * width + j];
+    pixelv o = v > 127;
+    spixelv err = v;
+    err -= o;
+    err >>= 3;
+
+    pixels[i * width + j + 0] = o;
+    pixels[i * width + j + 1] += 1 * err;
+    pixels[i * width + j + 2] += 1 * err;
+    pixels[(i + 1) * width + j - 1] += 1 * err;
+    pixels[(i + 1) * width + j + 0] += 1 * err;
+    pixels[(i + 1) * width + j + 1] += 1 * err;
+    pixels[(i + 2) * width + j + 0] += 1 * err;
+  }
+
+  j++;
+  v = pixels[i * width + j];
+  o = v > 127;
+  err = v;
+  err -= o;
+  err >>= 4;
+
+  pixels[i * width + j + 0] = o;
+  pixels[(i + 1) * width + j - 1] += 1 * err;
+  pixels[(i + 1) * width + j + 0] += 1 * err;
+
+  // == LAST ROW ==
+  i++;
+
+  v = pixels[i * width + 0];
+  o = v > 127;
+  err = v;
+  err -= o;
+  err >>= 3;
+
+  pixels[i * width + 0 + 0] = o;
+  pixels[i * width + 0 + 1] += 1 * err;
+  pixels[i * width + 0 + 2] += 1 * err;
+  pixels[(i + 1) * width + 0 + 1] += 1 * err;
+  pixels[(i + 1) * width + 0 + 0] += 1 * err;
+
+  for (j = 1; j < width - 1; j++) {
+    pixelv v = pixels[i * width + j];
+    pixelv o = v > 127;
+    spixelv err = v;
+    err -= o;
+    err >>= 3;
+
+    pixels[i * width + j + 0] = o;
+    pixels[i * width + j + 1] += 1 * err;
+    pixels[i * width + j + 2] += 1 * err;
+    pixels[(i + 1) * width + j - 1] += 1 * err;
+    pixels[(i + 1) * width + j + 0] += 1 * err;
+    pixels[(i + 1) * width + j + 1] += 1 * err;
+  }
+
+  j++;
+  v = pixels[i * width + j];
+  o = v > 127;
+  o[3] = v[3];
+  err = v;
+  err -= o;
+  err >>= 4;
+
+  pixels[i * width + j + 0] = o;
+  pixels[(i + 1) * width + j - 1] += 1 * err;
+}
+
+// Little bit of glue code
+uint8_t *loadImageRGBA(const uint8_t *const path, uint32_t *width, uint32_t *height) {
+  uint32_t ch;
+  return stbi_load(path, width, height, &ch, 4);
+}
+
+int32_t writeImageRGBA(const uint8_t *filePath, const uint8_t *image, uint32_t width, uint32_t height, uint32_t stride) {
+  return stbi_write_png(filePath, width, height, 4, image, stride) == 0 ? -1 : 0;
+}
+
+void unloadImageRGBA(uint8_t *image) {
+  free(image);
+}
 
 int32_t doNNS(uint32_t *pxs, uint32_t pxw, uint32_t pxh, uint8_t options, uint32_t *pal, uint32_t pals) {
   const size_t canProcess = pxw*pxh - (pxw*pxh % 4);
@@ -138,45 +274,4 @@ int roundUp(int numToRound, int multiple)
 {
     // assert(multiple && ((multiple & (multiple - 1)) == 0));
     return (numToRound + multiple - 1) & -multiple;
-}
-
-uint32_t *loadPalette(uint32_t *n, const char *filePath) {
-  std::string line;
-  union {
-    struct {
-      uint8_t r;
-      uint8_t g;
-      uint8_t b;
-      uint8_t a;
-    } x;
-    uint32_t z;
-  } color;
-  color.z = 0;
-  std::ifstream paletteFile(filePath);
-
-  if (!paletteFile.good()) {
-    std::cerr << "Encountered error reading from palette.hex reverting to default\n";
-    goto skip_fl;
-  }
-
-  nColors = 0;
-  while (paletteFile >> std::hex >> color.z) {
-    // check if has an alpha channel
-    // if (color.x.a == 0)
-      color.x.a = 0xff;
-    std::swap(color.x.r, color.x.b); // Idk whats going on but this was necessary
-    // std::swap(color.x.g, color.x.b);
-    printf("\x1b[38;2;%d;%d;%dm██████\x1b[0m (%d, %d, %d) %x\n", color.x.r,
-            color.x.g, color.x.b, color.x.r, color.x.g, color.x.b, color.z);
-  	colors[nColors++] = color.z;
-  }
- 
-  printf("\n\x1b[0m");
-  printf("Loaded %lu (padding to %d) colours from palette file: palette.hex\n", nColors, roundUp(nColors, 4));
-  paletteFile.close();
-  
-  skip_fl:
-  nColors = roundUp(nColors, 4);
-  *n = nColors;
-  return colors;
 }

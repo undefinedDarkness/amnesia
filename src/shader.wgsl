@@ -89,9 +89,16 @@ fn nearestNeighbourColourSearch(p: vec3f) -> vec3f {
 }
 
 @compute @workgroup_size(1, 1)
-fn main(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workgroups) n_w: vec3u) {
+fn colourPass(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workgroups) n_w: vec3u) {
     var p = textureLoad(input, global_id.xy, 0);
     p = vec4f(nearestNeighbourColourSearch(p.xyz), p.w);
+    textureStore(result, global_id.xy, p);
+}
+
+@compute @workgroup_size(1, 1)
+fn lumaPass(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workgroups) n_w: vec3u) {
+    var p = textureLoad(input, global_id.xy, 0);
+    p = vec4f(invertLumen(p).xyz, 1);
     textureStore(result, global_id.xy, p);
 }
 
@@ -112,5 +119,6 @@ fn glut(@builtin(global_invocation_id) pos : vec3u, @builtin(num_workgroups) siz
 @compute @workgroup_size(1, 1)
 fn slut(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workgroups) size: vec3u) {
     var px = textureLoad(input, global_id.xy, 0);
-    textureStore(result, global_id.xy, textureSampleLevel(lut, lutSampler, px.xyz, 0));
+    var px2 = textureSampleLevel(lut, lutSampler, px.xyz, 0);
+    textureStore(result, global_id.xy, px2);
 }
