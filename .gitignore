@@ -3,3 +3,5 @@ prod
 dt
 zig-out
 zig-cache
+lut.png
+output.png

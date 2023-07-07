@@ -6,20 +6,19 @@ const gpu = @import("gpu");
 pub const GPUInterface = gpu.dawn.Interface;
 
 const InitOptions = struct { power: gpu.PowerPreference = .low_power, backend: ?gpu.BackendType = .opengl };
-const Self = @This();
+pub const state = sample_utils.Setup;
+// state: sample_utils.Setup = undefined,
 
-state: sample_utils.Setup = undefined,
-
-pub fn init(allocator: std.mem.Allocator, options: InitOptions) !Self {
+pub fn init(allocator: std.mem.Allocator, options: InitOptions) !sample_utils.Setup {
     gpu.Impl.init();
-    return Self{ .state = try sample_utils.setup(allocator, options.power, options.backend orelse sample_utils.detectBackendType(allocator) catch .opengl) };
+    return try sample_utils.setup(allocator, options.power, options.backend orelse sample_utils.detectBackendType(allocator) catch .opengl);
 }
 
-pub fn getDevice(d: *Self) *gpu.Device {
-    return d.state.device;
+pub fn getDevice(d: *state) *gpu.Device {
+    return d.device;
 }
 
-pub fn waitForBufferMap(d: *Self, buf: *gpu.Buffer, bufSize: usize) void {
+pub fn waitForBufferMap(d: *state, buf: *gpu.Buffer, bufSize: usize) void {
     var ref: gpu.Buffer.MapAsyncStatus = undefined;
     const cb = (struct {
         pub inline fn wait(ctx: *gpu.Buffer.MapAsyncStatus, resp: gpu.Buffer.MapAsyncStatus) void {
@@ -31,16 +30,16 @@ pub fn waitForBufferMap(d: *Self, buf: *gpu.Buffer, bufSize: usize) void {
         if (ref == .success) {
             break;
         } else {
-            d.getDevice().tick();
+            d.device.tick();
         }
     }
 }
 
-pub fn deinit(d: *Self) void {
-    d.state.adapter.release();
-    d.state.device.release();
-    d.state.instance.release();
-    d.state.window.destroy();
+pub fn deinit(d: *state) void {
+    d.adapter.release();
+    d.device.release();
+    d.instance.release();
+    d.window.destroy();
 }
 
 // pub fn main() !void {
