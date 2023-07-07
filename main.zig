@@ -48,8 +48,9 @@ pub fn main() !void {
     defer _ = gpa.deinit();
     const help_msg = (
         \\-h, --help                      Display this help & exit.
-        \\-d, --dither_method <str>       Specify dithering method to use (bayer,atkinson)
+        \\-d, --dither_method <str>       Specify dithering method to use (bayer,atkinson,bluenoise)
         \\-g, --generate_lut <u32>        Generate a lookup table of the specified level
+        \\-m, --grayscale                 Make image grayscale
         \\-u, --use_lut <str>             Use a lut file & apply to image
         \\-p, --palette <str>             Use a palette hex file to read in colours and replace with nearest colours in image
         \\-l, --luma_invert               Perform luma inversion
@@ -66,7 +67,11 @@ pub fn main() !void {
     // var loaded_with_stb = false;
 
     if (res.args.help != 0) {
-        std.debug.print("{s}", .{"\n--- amnesia ---\n" ++ help_msg});
+        const preface = (
+            \\--- amnesia ---
+            \\use blue noise dithering with grayscale or it won't make sense
+        );
+        std.debug.print("\n{s}\n{s}", .{preface, help_msg});
         return;
     }
 
@@ -81,6 +86,10 @@ pub fn main() !void {
     if (res.args.palette) |v| {
         palette = try loadPalette(v);
         gpu_options.colorReplace = true;
+    }
+
+    if (res.args.grayscale != 0) {
+        gpu_options.grayscale = true;
     }
 
     var output_path: [:0]const u8 = "output.png";
@@ -146,9 +155,11 @@ pub fn main() !void {
 
     if (res.args.dither_method) |v| {
         if (std.mem.eql(u8, v, "bayer")) {
-            gpu_options.dither = true;
+            gpu_options.Bayer_dither = true;
         } else if (std.mem.eql(u8, v, "atkinson")) {
             atkinsonDither(0, image_height, image_width, image);
+        } else if (std.mem.eql(u8, v, "bluenoise")) {
+            gpu_options.BlueNoise_dither = true;
         }
     }
 

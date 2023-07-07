@@ -22,6 +22,7 @@ pub const Setup = struct {
     adapter: *gpu.Adapter,
     device: *gpu.Device,
     window: glfw.Window,
+    shd_c: [:0]const u8 = ""
     // surface: *gpu.Surface,
 };
 
@@ -118,7 +119,7 @@ pub fn setup(allocator: std.mem.Allocator, power_pref: gpu.PowerPreference, back
     // Print which adapter we are using.
     var props = std.mem.zeroes(gpu.Adapter.Properties);
     response.?.adapter.getProperties(&props);
-    std.debug.print("found {s} backend on {s} adapter: {s}, {s}\n", .{
+    std.log.info("(gpu) found {s} backend on {s} adapter: {s}, {s}", .{
         props.backend_type.name(),
         props.adapter_type.name(),
         props.name,

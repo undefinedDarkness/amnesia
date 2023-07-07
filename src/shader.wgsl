@@ -88,6 +88,12 @@ fn nearestNeighbourColourSearch(p: vec3f) -> vec3f {
     return minCol;
 }
 
+fn blueNoise(pos: vec2u) -> f32 {
+    let blDimensions = textureDimensions(palette).xy;
+    let uv = pos % blDimensions;
+    return textureLoad(palette, uv, 0).x;
+}
+
 @compute @workgroup_size(1, 1)
 fn colourPass(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workgroups) n_w: vec3u) {
     var p = textureLoad(input, global_id.xy, 0);
@@ -103,11 +109,27 @@ fn lumaPass(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workg
 }
 
 @compute @workgroup_size(1, 1)
+fn grayscalePass(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workgroups) n_w: vec3u) {
+    var p = textureLoad(input, global_id.xy, 0);
+    p = vec4f(vec3f(grayscale(p)), 1);
+    textureStore(result, global_id.xy, p);
+}
+
+@compute @workgroup_size(1, 1)
 fn ditherPass(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workgroups) n_w: vec3u) {
     var p = textureLoad(input, global_id.xy, 0);
     p = bayer(p, global_id.xy);
     textureStore(result, global_id.xy, p);
 }
+
+@compute @workgroup_size(1, 1)
+fn noiseDither(@builtin(global_invocation_id) global_id : vec3u, @builtin(num_workgroups) n_w: vec3u) {
+    let nn = blueNoise(global_id.xy);
+    var px = textureLoad(input, global_id.xy, 0);
+    px = vec4f(step(vec3f(nn), px.xyz), 1);
+    textureStore(result, global_id.xy, px);
+}
+
 
 @compute @workgroup_size(1, 1)
 fn glut(@builtin(global_invocation_id) pos : vec3u, @builtin(num_workgroups) size: vec3u) {
